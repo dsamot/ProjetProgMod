@@ -13,6 +13,12 @@ public:
     double fdStep_; /*! pas de différence finie */
     int nbSamples_; /*! nombre de tirages Monte Carlo */
 
+    /*!
+     * \brief Constructeur par defaut
+     */
+    MonteCarlo();
+    MonteCarlo(BlackScholesModel *bsModel, Option* option,PnlRng* pnlRng,double steps,int nbSamples);
+    
     /**
      * Calcule le prix de l'option à la date 0
      *

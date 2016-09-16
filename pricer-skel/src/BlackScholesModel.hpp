@@ -1,3 +1,6 @@
+#ifndef _PNL_MATRIX_H
+#define _PNL_MATRIX_H
+
 #pragma once
 
 #include "pnl/pnl_random.h"
@@ -14,6 +17,17 @@ public:
     PnlVect *sigma_; /// vecteur de volatilités
     PnlVect *spot_; /// valeurs initiales du sous-jacent
 
+    /*!
+     * \brief Constructeur par défaut
+     */
+    BlackScholesModel();
+    
+    /*!
+     * \brief Constructeur 
+     */
+    BlackScholesModel(int size, double r, double rho, PnlVect *sigma, PnlVect *spot);
+    
+    
     /**
      * Génère une trajectoire du modèle et la stocke dans path
      *
@@ -56,5 +70,7 @@ public:
                     int d, double h, double t, double timestep);
 
 };
+
+#endif /* _PNL_MATRIX_H
 
 

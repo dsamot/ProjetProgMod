@@ -3,13 +3,19 @@
 #include "pnl/pnl_random.h"
 #include "pnl/pnl_vector.h"
 
+#include "BlackScholesModel.hpp"
+
 using namespace std;
 
 int main()
 {
-    PnlVect *G = pnl_vect_new();
+    PnlVect *path = pnl_mat_new();
+    PnlVect *sigma = pnl_vect_new(2);
+    PnlVect *spot = pnl_vect_new(2);
     PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
-    int M = 1E5;
+    double T = 365;
+    int nbTimeSteps = 365;
+    /*int M = 1E5;
     int dim = 2;
     pnl_rng_sseed(rng, time(NULL));
 
@@ -30,6 +36,8 @@ int main()
     cout << "Var(||G||_2) = " << var << endl;
 
     pnl_vect_free(&G);
-    pnl_rng_free(&rng);
+    pnl_rng_free(&rng);*/
+    BlackScholesModel model = new BlackScholesModel(2,1.5,0,sigma,spot);
+    model.asset(PnlMat path, T, nbTimeSteps, rng);
     return 0;
 }
