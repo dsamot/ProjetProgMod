@@ -1,4 +1,5 @@
 #include "BlackScholesModel.hpp"
+#include <iostream>
 
 
 BlackScholesModel::BlackScholesModel() {
@@ -10,8 +11,8 @@ BlackScholesModel::BlackScholesModel() {
 }
 
 BlackScholesModel::BlackScholesModel(int size, double r, double rho, PnlVect *sigma, PnlVect *spot) {
-    this->sigma_ = &sigma;
-    this->spot_ = &spot;
+    this->sigma_ = sigma;
+    this->spot_ = spot;
     size_ = size;
     r_ = r;
     rho_ = rho;
@@ -23,44 +24,53 @@ void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *r
     double t;
     
     //Creation de la matrice de correlation
-    PnlMat CorrelationMat = new PnlMat(size_);
+    PnlMat *CorrelationMat = pnl_mat_create(size_,size_);
     for (int i = 0; i < size_; i++) {
         for (int j = 0; j < size_; j++) {
             if (i == j) {
-                CorrelationMat[i,j] = sigma_[i];
+                pnl_mat_set(CorrelationMat,i,j,pnl_vect_get(sigma_,i));
+                //CorrelationMat[i,j] = sigma_[i];
             } else {
-                CorrelationMat[i,j] = rho_;
+                pnl_mat_set(CorrelationMat,i,j,rho_);
+                //CorrelationMat[i,j] = rho_;
             }
         }
     }
-    
+
     // Factorisation de cholesky de la matrice de correlation
-    PnlMat CholeskyMat = new PnlMat();
-    CholeskyMat = pnl_mat_chol(CorrelationMat);
+    //PnlMat *CholeskyMat = pnl_mat_create(size_,size_);
+    int cholesky;
+    cholesky = pnl_mat_chol(CorrelationMat);
     
     // Remplissage de la premiere ligne de la matrice des chemins
     // avec les prix spot
     for (int d = 0; d < size_; d++) {
-        path[0,d] = spot_[d];
+        pnl_mat_set(path,0,d,pnl_vect_get(spot_,d));
+        //path[0,d] = spot_[d];
     }
-    
-    PnlMat G = new PnlMat(size_,nbTimeSteps);
+
+    //PnlMat G = new PnlMat(size_,nbTimeSteps);
+    PnlMat *G = pnl_mat_create(size_,nbTimeSteps);
     for (int d = 0; d < size_; d++) {      
-        for (int n = 1; n < nbTimeSteps + 1; n++) {
-            G[d,n] = pnl_rng_normal(rng);
+        for (int n = 0; n < nbTimeSteps; n++) {
+            pnl_mat_set(G,d,n,pnl_rng_normal(rng));
+            //G[d,n] = pnl_rng_normal(rng);
         }
     }
-    
     double LG;
-    PnlVect Ld;
-    PnlVect Gn;
+    // A Initialiser
+    PnlVect *Ld;
+    PnlVect *Gn;
+    double exprExp;
     
     for (int d = 0; d < size_; d++) {
-        pnl_mat_get_row(Ld,CholeskyMat,d);       
-        for (int n = 0; n < nbTimeSteps + 1; n++) {
+        pnl_mat_get_row(Ld,CorrelationMat,d);       
+        for (int n = 0; n < nbTimeSteps; n++) {
             pnl_mat_get_col(Gn,G,n);
             LG = pnl_vect_scalar_prod(Ld,Gn);
-            path[n+1,d] = path[n,d] * exp((r_ - (pow(sigma_[d],2)/2)) * pasTemps + sigma_[d] * sqrt(pasTemps) * LG);
+            exprExp = (r_ - (pow(pnl_vect_get(sigma_,d),2)/2)) * pasTemps + pnl_vect_get(sigma_,d) * sqrt(pasTemps) * LG;
+            pnl_mat_set(path,n+1,d,(pnl_mat_get(path,n,d) * exp(exprExp)));
+            //path[n+1,d] = path[n,d] * exp((r_ - (pow(sigma_[d],2)/2)) * pasTemps + sigma_[d] * sqrt(pasTemps) * LG);
         }
     }
     

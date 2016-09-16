@@ -9,12 +9,13 @@ using namespace std;
 
 int main()
 {
-    PnlVect *path = pnl_mat_new();
-    PnlVect *sigma = pnl_vect_new(2);
-    PnlVect *spot = pnl_vect_new(2);
-    PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
     double T = 365;
     int nbTimeSteps = 365;
+    PnlMat *path = pnl_mat_create(366,2);
+    PnlVect *sigma = pnl_vect_create(2);
+    PnlVect *spot = pnl_vect_create(2);
+    PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
+    pnl_rng_sseed(rng, time(NULL));
     /*int M = 1E5;
     int dim = 2;
     pnl_rng_sseed(rng, time(NULL));
@@ -37,7 +38,7 @@ int main()
 
     pnl_vect_free(&G);
     pnl_rng_free(&rng);*/
-    BlackScholesModel model = new BlackScholesModel(2,1.5,0,sigma,spot);
-    model.asset(PnlMat path, T, nbTimeSteps, rng);
+    BlackScholesModel *model = new BlackScholesModel(2,1.5,0,sigma,spot);
+    model->asset(path, T, nbTimeSteps, rng);
     return 0;
 }

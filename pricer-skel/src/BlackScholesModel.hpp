@@ -1,6 +1,3 @@
-#ifndef _PNL_MATRIX_H
-#define _PNL_MATRIX_H
-
 #pragma once
 
 #include "pnl/pnl_random.h"
@@ -71,6 +68,5 @@ public:
 
 };
 
-#endif /* _PNL_MATRIX_H
 
 

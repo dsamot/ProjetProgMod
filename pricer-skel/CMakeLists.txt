@@ -40,7 +40,7 @@ set(LIBS ${LIBS} m)
 # Testing the parser
 add_executable(parser-test src/parser.cpp src/test_parser.cpp)
 target_link_libraries(parser-test ${LIBS})
-add_executable(mc-example src/mc_example.cpp)
+add_executable(mc-example src/BlackScholesModel.cpp src/mc_example.cpp )
 target_link_libraries(mc-example ${LIBS})
 
 # add_executable(mc-pricer src/parser.cpp src/pricer.cpp)
