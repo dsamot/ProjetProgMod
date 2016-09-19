@@ -30,9 +30,9 @@ void MonteCarlo::price(double &prix, double &ic){
     double termeExp = exp(-interet*maturite);
     double sommePayOff =0;
     double sommePayOffCarre = 0;
-    int M = nbSamples_;
+    double M = (double)nbSamples_;
     for (int i=0; i< M; i++){
-        PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_,mod_->size_);
+        PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1,mod_->size_);
         mod_->asset(path,maturite,opt_->nbTimeSteps_,rng_);
         double res =  opt_->payoff(path);
         std::cout << "res" << res << std::endl;
@@ -56,7 +56,7 @@ void MonteCarlo::price(const PnlMat* past, double t, double& prix, double& ic) {
     double sommePayOffCarre = 0;
     int M = nbSamples_;
     for (int i=0; i< M; i++){
-        PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_,mod_->size_);
+        PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1,mod_->size_);
         pnl_mat_set_subblock(path,past,(opt_->nbTimeSteps_ - past->m),(mod_->size_ - past->n));
         mod_->asset(path,maturite,opt_->nbTimeSteps_,rng_);
         double res =  opt_->payoff(path);

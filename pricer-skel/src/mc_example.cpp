@@ -11,15 +11,27 @@ using namespace std;
 
 int main()
 {
-    double T = 365;
-    int nbTimeSteps = 365;
-    PnlMat *path = pnl_mat_create(366,2);
-    PnlVect *sigma = pnl_vect_create(2);
-    PnlVect *spot = pnl_vect_create(2);
-    pnl_vect_set(spot,0,100);
+    double maturity = 3;
+    int timeStepsNb = 1;
+    double interest = 0.04879;
+    double corr = 0.0;
+    int size = 40;
+    int sample = 50000;
+    int strike = 100;
+    double steps = 0;
+    double spotprice = 100;
+    double vol = 0.2;
+    PnlMat *path = pnl_mat_create(timeStepsNb + 1,size);
+    PnlVect *sigma = pnl_vect_create(size);
+    PnlVect *spot = pnl_vect_create(size);
+    for(int i = 0; i < size; i++) {
+        pnl_vect_set(spot,i,spotprice);
+        pnl_vect_set(sigma,i,vol);
+    }
+    /*pnl_vect_set(spot,0,100);
     pnl_vect_set(spot,1,100);
     pnl_vect_set(sigma,0,0.2);
-    pnl_vect_set(sigma,1,0.2);
+    pnl_vect_set(sigma,1,0.2);*/
     PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
     pnl_rng_sseed(rng, time(NULL));
     /*int M = 1E5;
@@ -44,9 +56,9 @@ int main()
 
     pnl_vect_free(&G);
     pnl_rng_free(&rng);*/
-    BlackScholesModel *model = new BlackScholesModel(2,0.02,0,sigma,spot);
-    BasketOption *basket = new BasketOption(1.5,150,2,100);
-    MonteCarlo *montecarlo = new MonteCarlo(model,basket,rng,0,50000);
+    BlackScholesModel *model = new BlackScholesModel(size,interest,corr,sigma,spot);
+    BasketOption *basket = new BasketOption(maturity,timeStepsNb,size,strike);
+    MonteCarlo *montecarlo = new MonteCarlo(model,basket,rng,steps,sample);
     double prix;
     double ic;
     montecarlo->price(prix,ic);

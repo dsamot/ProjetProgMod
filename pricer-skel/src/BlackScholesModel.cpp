@@ -61,13 +61,12 @@ void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *r
     
     for (int d = 0; d < size_; d++) {
         pnl_mat_get_row(Ld,CorrelationMat,d);       
-        for (int n = 1; n < nbTimeSteps; n++) {
+        for (int n = 0; n < nbTimeSteps; n++) {
             pnl_mat_get_col(Gn,G,n);
             LG = pnl_vect_scalar_prod(Ld,Gn);
-            exprExp = (r_ - (pow(pnl_vect_get(sigma_,d),2)/2)) * pasTemps + pnl_vect_get(sigma_,d) * sqrt(pasTemps) * LG;
-            pnl_mat_set(path,n,d,(pnl_mat_get(path,n-1,d) * exp(exprExp)));
+            exprExp = (r_ - (pow(pnl_vect_get(sigma_,d),2)/2.0)) * pasTemps + pnl_vect_get(sigma_,d) * sqrt(pasTemps) * LG;
+            pnl_mat_set(path,n+1,d,(pnl_mat_get(path,n,d) * exp(exprExp)));
         }
-        std::cout << "sous jacent d=0, n : " << nbTimeSteps << " valeur : " << pnl_mat_get(path,nbTimeSteps-1,0) << std::endl;
-    }
-    
+        //std::cout << "sous jacent d=0, n : " << nbTimeSteps << " valeur : " << pnl_mat_get(path,nbTimeSteps-1,0) << std::endl;
+    }    
 }
