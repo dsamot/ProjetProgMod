@@ -28,10 +28,12 @@ void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *r
     for (int i = 0; i < size_; i++) {
         for (int j = 0; j < size_; j++) {
             if (i == j) {
-                pnl_mat_set(CorrelationMat,i,j,pnl_vect_get(sigma_,i));
+                pnl_mat_set(CorrelationMat,i,j,1);
+                //std::cout << " valeur : " << pnl_mat_get(CorrelationMat,i,j) << std::endl;
                 //CorrelationMat[i,j] = sigma_[i];
             } else {
                 pnl_mat_set(CorrelationMat,i,j,rho_);
+                //std::cout << " valeur : " << pnl_mat_get(CorrelationMat,i,j) << std::endl;
                 //CorrelationMat[i,j] = rho_;
             }
         }
@@ -41,6 +43,7 @@ void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *r
     //PnlMat *CholeskyMat = pnl_mat_create(size_,size_);
     int cholesky;
     cholesky = pnl_mat_chol(CorrelationMat);
+    
     
     // Remplissage de la premiere ligne de la matrice des chemins
     // avec les prix spot
@@ -57,21 +60,29 @@ void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *r
             //G[d,n] = pnl_rng_normal(rng);
         }
     }
+
+    pnl_mat_print(G);
     double LG;
     // A Initialiser
-    PnlVect *Ld;
-    PnlVect *Gn;
+    PnlVect *Ld = pnl_vect_create(size_);
+    PnlVect *Gn = pnl_vect_create(size_);
     double exprExp;
     
     for (int d = 0; d < size_; d++) {
         pnl_mat_get_row(Ld,CorrelationMat,d);       
-        for (int n = 0; n < nbTimeSteps; n++) {
+        for (int n = 1; n < nbTimeSteps; n++) {
             pnl_mat_get_col(Gn,G,n);
             LG = pnl_vect_scalar_prod(Ld,Gn);
             exprExp = (r_ - (pow(pnl_vect_get(sigma_,d),2)/2)) * pasTemps + pnl_vect_get(sigma_,d) * sqrt(pasTemps) * LG;
-            pnl_mat_set(path,n+1,d,(pnl_mat_get(path,n,d) * exp(exprExp)));
-            //path[n+1,d] = path[n,d] * exp((r_ - (pow(sigma_[d],2)/2)) * pasTemps + sigma_[d] * sqrt(pasTemps) * LG);
+            //std::cout << " exp: " << exp(exprExp) << std::endl;
+            //std::cout << "precedent n : " << n << " valeur : " << pnl_mat_get(path,n-1,0) << std::endl;
+            pnl_mat_set(path,n,d,(pnl_mat_get(path,n-1,d) * exp(exprExp)));
+            //std::cout << "actuel d=0, n : " << n << " valeur : " << pnl_mat_get(path,n,0) << std::endl;
         }
+    }
+
+    for (int n = 0; n < nbTimeSteps; n++) {
+        //std::cout << "sous jacent d=0, n : " << n << " valeur : " << pnl_mat_get(path,n,0) << std::endl;
     }
     
 }

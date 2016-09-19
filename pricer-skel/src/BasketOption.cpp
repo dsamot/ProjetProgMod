@@ -25,17 +25,19 @@ BasketOption::BasketOption(double monT, int monNbTimeStep, int maSize, double mo
 BasketOption::~BasketOption() {
 }
 
-virtual double BasketOption::payoff(const PnlMat* path) {
+double BasketOption::payoff(const PnlMat* path) {
     double somme = 0;
     PnlMat* poids = pnl_mat_create(1, path->n);
     int N = (path->n) - 1;
     for (int j = 0; j < path->n; j++) {
-        poids[0, j] = 1 / (path->n);
+        pnl_mat_set(poids,0,j,(1 / (path->n)));
+        //poids[0, j] = 1 / (path->n);
     }
 
 
     for (int i = 0; i < path->n; i++) {
-        somme = somme + poids[i] * path[N, i] - strike;
+        somme = somme + pnl_mat_get(poids,0,i) * pnl_mat_get(path,N,i) - strike;
+        //somme = somme + poids[i] * path[N, i] - strike;
     }
 
     if (somme > 0) {

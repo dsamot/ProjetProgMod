@@ -17,6 +17,10 @@ public:
      * \brief Constructeur par defaut
      */
     MonteCarlo();
+
+    /*!
+     * \brief Constructeur
+     */
     MonteCarlo(BlackScholesModel *bsModel, Option* option,PnlRng* pnlRng,double steps,int nbSamples);
     
     /**
