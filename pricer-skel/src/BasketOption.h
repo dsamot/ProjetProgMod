@@ -23,7 +23,7 @@ public:
      * par la fonction asset.
      * @return phi(trajectoire)
      */
-    double payoff(const PnlMat *path) = 0;
+    double payoff(const PnlMat *path);
 private:
     double strike;
 };

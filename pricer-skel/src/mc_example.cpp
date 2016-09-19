@@ -48,8 +48,8 @@ int main()
     MonteCarlo *montecarlo = new MonteCarlo(model,basket,rng,0,50000);
     double prix;
     double ic;
-    montecarlo->price(*prix,*ic);
-    std::cout << "prix : " << *prix << std::endl;
+    montecarlo->price(prix,ic);
+    std::cout << "prix : " << prix << std::endl;
     //model->asset(path, T, nbTimeSteps, rng);
     return 0;
 }
