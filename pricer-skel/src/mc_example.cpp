@@ -16,9 +16,10 @@ int main()
     PnlMat *path = pnl_mat_create(366,2);
     PnlVect *sigma = pnl_vect_create(2);
     PnlVect *spot = pnl_vect_create(2);
-    pnl_vect_set(spot,0,10);
-    pnl_vect_set(sigma,0,0.4);
-    pnl_vect_set(sigma,1,0.4);
+    pnl_vect_set(spot,0,100);
+    pnl_vect_set(spot,1,100);
+    pnl_vect_set(sigma,0,0.2);
+    pnl_vect_set(sigma,1,0.2);
     PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
     pnl_rng_sseed(rng, time(NULL));
     /*int M = 1E5;

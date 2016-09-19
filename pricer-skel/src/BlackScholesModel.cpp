@@ -29,12 +29,9 @@ void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *r
         for (int j = 0; j < size_; j++) {
             if (i == j) {
                 pnl_mat_set(CorrelationMat,i,j,1);
-                //std::cout << " valeur : " << pnl_mat_get(CorrelationMat,i,j) << std::endl;
-                //CorrelationMat[i,j] = sigma_[i];
             } else {
                 pnl_mat_set(CorrelationMat,i,j,rho_);
-                //std::cout << " valeur : " << pnl_mat_get(CorrelationMat,i,j) << std::endl;
-                //CorrelationMat[i,j] = rho_;
+
             }
         }
     }
@@ -49,21 +46,15 @@ void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *r
     // avec les prix spot
     for (int d = 0; d < size_; d++) {
         pnl_mat_set(path,0,d,pnl_vect_get(spot_,d));
-        //path[0,d] = spot_[d];
     }
 
-    //PnlMat G = new PnlMat(size_,nbTimeSteps);
     PnlMat *G = pnl_mat_create(size_,nbTimeSteps);
     for (int d = 0; d < size_; d++) {      
         for (int n = 0; n < nbTimeSteps; n++) {
             pnl_mat_set(G,d,n,pnl_rng_normal(rng));
-            //G[d,n] = pnl_rng_normal(rng);
         }
     }
-
-    //pnl_mat_print(G);
     double LG;
-    // A Initialiser
     PnlVect *Ld = pnl_vect_create(size_);
     PnlVect *Gn = pnl_vect_create(size_);
     double exprExp;
@@ -76,10 +67,7 @@ void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *r
             exprExp = (r_ - (pow(pnl_vect_get(sigma_,d),2)/2)) * pasTemps + pnl_vect_get(sigma_,d) * sqrt(pasTemps) * LG;
             pnl_mat_set(path,n,d,(pnl_mat_get(path,n-1,d) * exp(exprExp)));
         }
+        std::cout << "sous jacent d=0, n : " << nbTimeSteps << " valeur : " << pnl_mat_get(path,nbTimeSteps-1,0) << std::endl;
     }
-
-    /*for (int n = 0; n < nbTimeSteps; n++) {
-        //std::cout << "sous jacent d=0, n : " << n << " valeur : " << pnl_mat_get(path,n,0) << std::endl;
-    }*/
     
 }

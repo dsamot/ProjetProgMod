@@ -35,6 +35,7 @@ void MonteCarlo::price(double &prix, double &ic){
         PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_,mod_->size_);
         mod_->asset(path,maturite,opt_->nbTimeSteps_,rng_);
         double res =  opt_->payoff(path);
+        std::cout << "res" << res << std::endl;
         sommePayOff += res;
         sommePayOffCarre += res*res;
     }
@@ -62,7 +63,7 @@ void MonteCarlo::price(const PnlMat* past, double t, double& prix, double& ic) {
         sommePayOff += res;
         sommePayOffCarre += res*res;
     }
-    double moyenne = sommePayOff/M;
+    double moyenne = (double)sommePayOff/(double)M;
     double variance = exp(-2*interet*(maturite-t))*(sommePayOffCarre/M - pow(moyenne,2.0));
     ic = sqrt(variance/M)*2.0*1.96;
     prix = termeExp*moyenne;

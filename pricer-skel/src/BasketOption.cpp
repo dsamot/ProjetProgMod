@@ -6,6 +6,7 @@
  */
 
 #include "BasketOption.h"
+#include <iostream>
 
 BasketOption::BasketOption() {
 }
@@ -30,16 +31,14 @@ double BasketOption::payoff(const PnlMat* path) {
     PnlMat* poids = pnl_mat_create(1, path->n);
     int N = (path->n) - 1;
     for (int j = 0; j < path->n; j++) {
-        pnl_mat_set(poids,0,j,(1 / (path->n)));
-        //poids[0, j] = 1 / (path->n);
+        pnl_mat_set(poids,0,j,(1 / (double) (path->n)));
     }
 
 
     for (int i = 0; i < path->n; i++) {
-        somme = somme + pnl_mat_get(poids,0,i) * pnl_mat_get(path,N,i) - strike;
-        //somme = somme + poids[i] * path[N, i] - strike;
+        somme = somme + pnl_mat_get(poids,0,i) * pnl_mat_get(path,N,i);
     }
-
+    somme -= strike;
     if (somme > 0) {
         return somme;
     } else {
