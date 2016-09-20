@@ -7,6 +7,7 @@
 
 #ifndef ASIANOPTION_HPP
 #define	ASIANOPTION_HPP
+#include "Option.hpp"
 
 class AsianOption  : public Option{
 public:
@@ -22,7 +23,7 @@ public:
      * par la fonction asset.
      * @return phi(trajectoire)
      */
-  virtual double payoff(const PnlMat *path) = 0;
+   double payoff(const PnlMat *path);
   
 private:
     double strike;
