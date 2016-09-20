@@ -11,10 +11,10 @@ using namespace std;
 
 int main()
 {
-    double maturity = 3;
+    double maturity = 1;
     int timeStepsNb = 1;
     double interest = 0.04879;
-    double corr = 0.0;
+    double corr = 0.7;
     int size = 40;
     int sample = 50000;
     int strike = 100;
