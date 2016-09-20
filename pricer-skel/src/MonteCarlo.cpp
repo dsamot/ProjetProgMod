@@ -69,3 +69,14 @@ void MonteCarlo::price(const PnlMat* past, double t, double& prix, double& ic) {
     prix = termeExp*moyenne;
 }
 
+
+void delta(const PnlMat *past, double t, PnlVect *delta) {
+    int size_asset = mod->size_;
+    delta = pnl_vect_create(size_asset);
+    mod->
+
+
+    //shiftAsset(PnlMat *shift_path, const PnlMat *path,      int d, double h, double t, double timestep);
+}
+
+
