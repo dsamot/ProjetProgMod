@@ -29,7 +29,6 @@ BasketOption::~BasketOption() {
 double BasketOption::payoff(const PnlMat* path) {
     double somme = 0;
     PnlMat* poids = pnl_mat_create(1, path->n);
-    std::cout << "taille: " << path->n << std::endl;
     int N = (path->m) - 1;
     double payoffcoeff = 1 / (double)(path->n);
     for (int j = 0; j < path->n; j++) {

@@ -28,10 +28,6 @@ int main()
         pnl_vect_set(spot,i,spotprice);
         pnl_vect_set(sigma,i,vol);
     }
-    /*pnl_vect_set(spot,0,100);
-    pnl_vect_set(spot,1,100);
-    pnl_vect_set(sigma,0,0.2);
-    pnl_vect_set(sigma,1,0.2);*/
     PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
     pnl_rng_sseed(rng, time(NULL));
     /*int M = 1E5;
@@ -63,6 +59,7 @@ int main()
     double ic;
     montecarlo->price(prix,ic);
     std::cout << "prix : " << prix << std::endl;
+    std::cout << "ic : " << ic << std::endl;
     //model->asset(path, T, nbTimeSteps, rng);
     return 0;
 }

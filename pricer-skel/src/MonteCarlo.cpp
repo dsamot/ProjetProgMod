@@ -40,8 +40,10 @@ void MonteCarlo::price(double &prix, double &ic){
         sommePayOffCarre += res*res;
     }
     double moyenne = sommePayOff/M;
-    double variance = exp(-2*interet*maturite)*(sommePayOffCarre/M - pow(moyenne,2.0));
-    ic = sqrt(variance/M)*2.0*1.96;
+    double variance = (sommePayOffCarre/M - pow(moyenne,2.0));
+    //double variance = exp(-interet*maturite)*(sommePayOffCarre/M - pow(moyenne,2.0));
+    ic = sqrt(variance/M)*2.0*1.96*termeExp;
+    std::cout << "StandardDeviation" <<  sqrt(variance*exp(-2*interet*maturite)/M) << std::endl;
     prix = termeExp*moyenne;
 }
 
