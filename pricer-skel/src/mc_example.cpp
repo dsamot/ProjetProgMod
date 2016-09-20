@@ -6,7 +6,8 @@
 #include "BlackScholesModel.hpp"
 #include "MonteCarlo.hpp"
 #include "BasketOption.h"
-
+#include "AsianOption.hpp"
+#include "PerformanceOption.hpp"
 using namespace std;
 
 int main()
@@ -16,8 +17,13 @@ int main()
     double interest = 0.04879;
     double corr = 0.0;
     int size = 40;
+    /*double maturity = 2;
+    int timeStepsNb = 12;
+    double interest = 0.03;
+    double corr = 0.5;
+    int size = 5;*/
     int sample = 50000;
-    int strike = 100;
+    double strike = 100.0;
     double steps = 0;
     double spotprice = 100;
     double vol = 0.2;
@@ -58,6 +64,10 @@ int main()
     model->asset(past, maturity-1.5, 3, rng);
     BasketOption *basket = new BasketOption(maturity,timeStepsNb,size,strike);
     MonteCarlo *montecarlo = new MonteCarlo(model,basket,rng,steps,sample);
+    //BasketOption *basket = new BasketOption(maturity,timeStepsNb,size,strike);
+    //AsianOption *asian = new AsianOption(maturity, timeStepsNb, size, strike);
+    /*PerformanceOption *performance = new PerformanceOption(maturity, timeStepsNb, size);
+    MonteCarlo *montecarlo = new MonteCarlo(model,performance,rng,steps,sample);*/
     double prix;
     double ic;
     std::cout << "ligne past : " << past->m << std::endl;

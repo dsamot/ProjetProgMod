@@ -7,8 +7,9 @@
 
 #ifndef PERFORMANCEOPTION_HPP
 #define	PERFORMANCEOPTION_HPP
+ #include "Option.hpp"
 
-class PerformanceOption {
+class PerformanceOption : public Option{
 public:
     PerformanceOption();
     PerformanceOption(const PerformanceOption& orig);
@@ -22,7 +23,7 @@ public:
      * par la fonction asset.
      * @return phi(trajectoire)
      */
-    virtual double payoff(const PnlMat *path) = 0;
+  double payoff(const PnlMat *path);
 private:
 
 };
