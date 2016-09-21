@@ -114,6 +114,8 @@ void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
     PnlVect *Gn = pnl_vect_create(size_);
     double exprExp;
 
+    bool prem = true;
+
     // Simulation du prix du sous-jacent à partir de la date t
     for (int d = 0; d < size_; d++) {
         st = pnl_mat_get(past,(past->m - 1),d);
@@ -121,12 +123,23 @@ void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
         for (int n = (past->m - 1); n < nbTimeSteps; n++) {
             pnl_mat_get_col(Gn,G,n);
             LG = pnl_vect_scalar_prod(Ld,Gn);
-            u = (T/(double) nbTimeSteps) * (n + 1 - t);
+
+            if (prem) {
+                u = (T/(double) nbTimeSteps) * (n + 1) - t;
+            } else {
+                u = (T/(double) nbTimeSteps);
+            }
             sTilde = exp((r_ - (pow(pnl_vect_get(sigma_,d),2)/2.0)) * u + pnl_vect_get(sigma_,d) * sqrt(u) * LG);
-            sSimul = st * sTilde;
+            if (prem) {
+                sSimul = st * sTilde;
+            } else {
+                sSimul = pnl_mat_get(path,n,d) * sTilde;
+            }
             pnl_mat_set(path,n+1,d,sSimul);
-            std::cout<< "indice : "<< n+1 << "   u : " <<  u<<std::endl;
+            prem = false;
+            //std::cout << "n+1: " << n+1 << std::endl;
        }
+       prem = true;
     }
 }
 

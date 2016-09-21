@@ -13,17 +13,10 @@ using namespace std;
 
 int main()
 {
-    /*
-    // Data pour basket option
-    double maturity = 3;
-    int timeStepsNb = 1;
-    double interest = 0.04879;
-    double corr = 0.0;
-    int size = 40;*/
     
     // Data pour performance option
-    double maturity = 1;
-    int timeStepsNb = 365;
+    double maturity = 2;
+    int timeStepsNb = maturity*365;
     double interest = 0.04879;
     double corr = 0;
     int size = 1;
@@ -32,8 +25,8 @@ int main()
     double steps = 0;
     double spotprice = 100;
     double vol = 0.2;
-    PnlMat *path = pnl_mat_create(177+ 1,size);
-    PnlMat *past = pnl_mat_create(177 +1,size);
+
+    PnlMat *past = pnl_mat_create(365 +1,size);
     PnlVect *sigma = pnl_vect_create(size);
     PnlVect *spot = pnl_vect_create(size);
     for (int i=0; i<size; i++) {
@@ -42,47 +35,35 @@ int main()
     }
     PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
     pnl_rng_sseed(rng, time(NULL));
-    /*int M = 1E5;
-    int dim = 2;
-    pnl_rng_sseed(rng, time(NULL));
-
-    double acc = 0., var = 0;
-
-    for (int i = 0; i < M; i++)
-    {
-        pnl_vect_rng_normal(G, dim, rng);
-        double tmp = pnl_vect_norm_two(G);
-        acc += tmp;
-        var += tmp * tmp;
-    }
-
-    acc /= M;
-    var = var / M - acc * acc;
-
-    cout << "E[||G||_2] = " << acc << endl;
-    cout << "Var(||G||_2) = " << var << endl;
-
-    pnl_vect_free(&G);
-    pnl_rng_free(&rng);*/
 
     BlackScholesModel *model = new BlackScholesModel(size,interest,corr,sigma,spot);
     
     // Creation des donnees historiques
-    model->asset(past, 1, 177, rng);
+    model->asset(past, maturity, 365, rng);
+    pnl_mat_set(past,365,0,100);
     BasketOption *basket = new BasketOption(maturity,timeStepsNb,size,strike);
     MonteCarlo *montecarlo = new MonteCarlo(model,basket,rng,steps,sample);
-
-    //BasketOption *basket = new BasketOption(maturity,timeStepsNb,size,strike);
-    //AsianOption *asian = new AsianOption(maturity, timeStepsNb, size, strike);
-    //PerformanceOption *performance = new PerformanceOption(maturity, timeStepsNb, size);
-    //MonteCarlo *montecarlo = new MonteCarlo(model,performance,rng,steps,sample);
     double prix;
     double ic;
-    //montecarlo->price(past,1,prix,ic);
-    //pnl_mat_print(past);
-    montecarlo->price(past,177,prix,ic);
+    // T1 - t
+    montecarlo->price(past,365/(maturity*365) * maturity ,prix,ic);
+    std::cout << "prix1 : " << prix << std::endl;
+    
 
-    std::cout << "prix : " << prix << std::endl;
-    std::cout << "ic : " << ic << std::endl;
+
+    maturity = 1;
+    timeStepsNb = 365*maturity;
+    for (int i=0; i<size; i++) {
+        pnl_vect_set(spot,i,spotprice);
+        pnl_vect_set(sigma,i,vol);
+    }
+    
+    // Creation des donnees historiques
+    basket = new BasketOption(maturity,timeStepsNb,size,strike);
+    montecarlo = new MonteCarlo(model,basket,rng,steps,sample);
+
+    montecarlo->price(prix,ic);
+    std::cout << "prix2 : " << prix << std::endl;
+
     return 0;
 }
