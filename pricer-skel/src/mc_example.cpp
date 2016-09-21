@@ -22,18 +22,18 @@ int main()
     int size = 40;*/
     
     // Data pour performance option
-    double maturity = 365;
-    int timeStepsNb = 365/2;
+    double maturity = 1;
+    int timeStepsNb = 365;
     double interest = 0.04879;
     double corr = 0;
-    int size = 2;
+    int size = 1;
     int sample = 50000;
-    double strike = 20.0;
+    double strike = 100.0;
     double steps = 0;
-    double spotprice = 20;
+    double spotprice = 100;
     double vol = 0.2;
-    PnlMat *path = pnl_mat_create(365/2 + 1,size);
-    PnlMat *past = pnl_mat_create(365/2+1,size);
+    PnlMat *path = pnl_mat_create(177+ 1,size);
+    PnlMat *past = pnl_mat_create(177 +1,size);
     PnlVect *sigma = pnl_vect_create(size);
     PnlVect *spot = pnl_vect_create(size);
     for (int i=0; i<size; i++) {
@@ -68,7 +68,7 @@ int main()
     BlackScholesModel *model = new BlackScholesModel(size,interest,corr,sigma,spot);
     
     // Creation des donnees historiques
-    model->asset(past, maturity/2, maturity/2, rng);
+    model->asset(past, 1, 177, rng);
     BasketOption *basket = new BasketOption(maturity,timeStepsNb,size,strike);
     MonteCarlo *montecarlo = new MonteCarlo(model,basket,rng,steps,sample);
 
@@ -80,10 +80,9 @@ int main()
     double ic;
     //montecarlo->price(past,1,prix,ic);
     //pnl_mat_print(past);
-    montecarlo->price(past,365/2,prix,ic);
+    montecarlo->price(past,177,prix,ic);
 
     std::cout << "prix : " << prix << std::endl;
     std::cout << "ic : " << ic << std::endl;
-    cout << "Prix S(Maturité)" << pnl_mat_get(past, 0, 365) << endl;
     return 0;
 }

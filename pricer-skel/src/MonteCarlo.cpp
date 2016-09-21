@@ -62,8 +62,6 @@ void MonteCarlo::price(const PnlMat* past, double t, double& prix, double& ic) {
     for (int i=0; i< M; i++){
         mod_->asset(path,t,maturite,opt_->nbTimeSteps_,rng_, past);
         double res =  opt_->payoff(path);
-        //pnl_mat_print(path);
-        //std::cout << "res: " << res << std::endl;
         sommePayOff += res;
         sommePayOffCarre += res*res;
     }
@@ -74,7 +72,7 @@ void MonteCarlo::price(const PnlMat* past, double t, double& prix, double& ic) {
 }
 
 
-/*void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta) {
+void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta) {
     double M = (double)nbSamples_;
     double interet = mod_->r_ ;
     double maturite = opt_->T_;
@@ -97,6 +95,6 @@ void MonteCarlo::price(const PnlMat* past, double t, double& prix, double& ic) {
         sommeDiffPayOff = 0;
     }
     pnl_vect_print(delta);
-}*/
+}
 
 

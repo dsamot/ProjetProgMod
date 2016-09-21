@@ -20,7 +20,8 @@ BlackScholesModel::BlackScholesModel(int size, double r, double rho, PnlVect *si
 
 void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *rng) {
     double pasTemps = T/(double) nbTimeSteps;
-    
+    //std::cout<< "pasTemps: " << pasTemps <<std::endl;
+
     // Creation de la matrice de correlation
     PnlMat *CorrelationMat = pnl_mat_create(size_,size_);
     for (int i = 0; i < size_; i++) {
@@ -69,16 +70,15 @@ void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *r
             pnl_mat_set(path,n+1,d,(pnl_mat_get(path,n,d) * exp(exprExp)));
         }
     }
-
-    pnl_mat_print(path);    
 }
+
+
 
 void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
                PnlRng *rng, const PnlMat *past) {  
     // Remplissage d'une partie de la matrice des chemins
     // avec la matrice past contenant des donnees historiques
     pnl_mat_set_subblock(path,past,0,0);
-
     double u;
     double sTilde;
     double sSimul;
@@ -118,14 +118,14 @@ void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
     for (int d = 0; d < size_; d++) {
         st = pnl_mat_get(past,(past->m - 1),d);
         pnl_mat_get_row(Ld,CorrelationMat,d);
-        for (int n = past->m; n < nbTimeSteps; n++) {
-            u = (T/(double) nbTimeSteps) *n - t;
-            //std::cout << "u: " << u << std::endl;
-            //sTilde = exp(r_ - (pnl_vect_get(sigma_,d)/2)*u + pnl_vect_get(sigma_,d)*pnl_rng_normal(rng));
-            sTilde = (r_ - (pow(pnl_vect_get(sigma_,d),2)/2.0)) * u + pnl_vect_get(sigma_,d) * sqrt(u) * LG;
+        for (int n = (past->m - 1); n < nbTimeSteps; n++) {
+            pnl_mat_get_col(Gn,G,n);
+            LG = pnl_vect_scalar_prod(Ld,Gn);
+            u = (T/(double) nbTimeSteps) * (n + 1 - t);
+            sTilde = exp((r_ - (pow(pnl_vect_get(sigma_,d),2)/2.0)) * u + pnl_vect_get(sigma_,d) * sqrt(u) * LG);
             sSimul = st * sTilde;
             pnl_mat_set(path,n+1,d,sSimul);
-            //std::cout << "n+1: " << n+1 << std::endl;
+            std::cout<< "indice : "<< n+1 << "   u : " <<  u<<std::endl;
        }
     }
 }
