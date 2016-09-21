@@ -45,6 +45,7 @@ void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *r
         pnl_mat_set(path,0,d,pnl_vect_get(spot_,d));
     }
 
+
     // Creation d'une matrice D x (N+1) qui représente la suite de vecteurs gaussiens
     PnlMat *G = pnl_mat_create(size_,nbTimeSteps);
     for (int d = 0; d < size_; d++) {      
@@ -69,7 +70,7 @@ void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *r
         }
     }
 
-    //pnl_mat_print(path);    
+    pnl_mat_print(path);    
 }
 
 void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,

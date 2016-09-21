@@ -23,21 +23,23 @@ int main()
     
     // Data pour performance option
     double maturity = 365;
-    int timeStepsNb = 5;
+    int timeStepsNb = 365/2;
     double interest = 0.04879;
     double corr = 0;
-    int size = 1;
+    int size = 2;
     int sample = 50000;
-    double strike = 100.0;
+    double strike = 20.0;
     double steps = 0;
-    double spotprice = 100;
+    double spotprice = 20;
     double vol = 0.2;
-    PnlMat *path = pnl_mat_create(timeStepsNb + 1,size);
-    PnlMat *past = pnl_mat_create(365+1,size);
+    PnlMat *path = pnl_mat_create(365/2 + 1,size);
+    PnlMat *past = pnl_mat_create(365/2+1,size);
     PnlVect *sigma = pnl_vect_create(size);
     PnlVect *spot = pnl_vect_create(size);
-
-
+    for (int i=0; i<size; i++) {
+        pnl_vect_set(spot,i,spotprice);
+        pnl_vect_set(sigma,i,vol);
+    }
     PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
     pnl_rng_sseed(rng, time(NULL));
     /*int M = 1E5;
@@ -66,7 +68,7 @@ int main()
     BlackScholesModel *model = new BlackScholesModel(size,interest,corr,sigma,spot);
     
     // Creation des donnees historiques
-    model->asset(past, maturity-365/2, maturity, rng);
+    model->asset(past, maturity/2, maturity/2, rng);
     BasketOption *basket = new BasketOption(maturity,timeStepsNb,size,strike);
     MonteCarlo *montecarlo = new MonteCarlo(model,basket,rng,steps,sample);
 
@@ -77,7 +79,7 @@ int main()
     double prix;
     double ic;
     //montecarlo->price(past,1,prix,ic);
-    pnl_mat_print(past);
+    //pnl_mat_print(past);
     montecarlo->price(past,365/2,prix,ic);
 
     std::cout << "prix : " << prix << std::endl;
