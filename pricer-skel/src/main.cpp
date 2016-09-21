@@ -73,10 +73,10 @@ int main(int argc, char **argv)
     double prix;
     double ic;
     PnlVect *delta = pnl_vect_create(size);
-    montecarlo->price(prix,ic);
+    /*montecarlo->price(prix,ic);
 
     std::cout << "prix : " << prix << std::endl;
-    std::cout << "ic : " << ic << std::endl;
+    std::cout << "ic : " << ic << std::endl;*/
     
     //Cas data historiques
     /*montecarlo->price(past,2*maturity/timeStepsNb,prix,ic);

@@ -141,6 +141,11 @@ void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
        }
        prem = true;
     }
+
+    pnl_mat_free(&CorrelationMat);
+    pnl_mat_free(&G);
+    pnl_vect_free(&Ld);
+    pnl_vect_free(&Gn);
 }
 
 void BlackScholesModel::shiftAsset(PnlMat *shift_path, const PnlMat *path,
