@@ -12,16 +12,20 @@ using namespace std;
 
 int main()
 {
+    /*
+    // Data pour basket option
     double maturity = 3;
-    int timeStepsNb = 9;
+    int timeStepsNb = 1;
     double interest = 0.04879;
     double corr = 0.0;
-    int size = 40;
-    /*double maturity = 2;
+    int size = 40;*/
+    
+    // Data pour performance option
+    double maturity = 2;
     int timeStepsNb = 12;
     double interest = 0.03;
     double corr = 0.5;
-    int size = 5;*/
+    int size = 5;
     int sample = 50000;
     double strike = 100.0;
     double steps = 0;
@@ -59,22 +63,23 @@ int main()
 
     pnl_vect_free(&G);
     pnl_rng_free(&rng);*/
+
     BlackScholesModel *model = new BlackScholesModel(size,interest,corr,sigma,spot);
     // Creation des donnees historiques
-    model->asset(past, maturity-1.5, 3, rng);
+    /*model->asset(past, maturity-1.5, 3, rng);
+    
     BasketOption *basket = new BasketOption(maturity,timeStepsNb,size,strike);
-    MonteCarlo *montecarlo = new MonteCarlo(model,basket,rng,steps,sample);
+    MonteCarlo *montecarlo = new MonteCarlo(model,basket,rng,steps,sample);*/
+    
     //BasketOption *basket = new BasketOption(maturity,timeStepsNb,size,strike);
     //AsianOption *asian = new AsianOption(maturity, timeStepsNb, size, strike);
-    /*PerformanceOption *performance = new PerformanceOption(maturity, timeStepsNb, size);
-    MonteCarlo *montecarlo = new MonteCarlo(model,performance,rng,steps,sample);*/
+    PerformanceOption *performance = new PerformanceOption(maturity, timeStepsNb, size);
+    MonteCarlo *montecarlo = new MonteCarlo(model,performance,rng,steps,sample);
     double prix;
     double ic;
-    std::cout << "ligne past : " << past->m << std::endl;
-    std::cout << "col past : " << past->n << std::endl;
-    montecarlo->price(past,1,prix,ic);
+    //montecarlo->price(past,1,prix,ic);
+    montecarlo->price(prix,ic);
     std::cout << "prix : " << prix << std::endl;
     std::cout << "ic : " << ic << std::endl;
-    //model->asset(path, T, nbTimeSteps, rng);
     return 0;
 }

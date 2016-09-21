@@ -29,6 +29,7 @@ PerformanceOption::~PerformanceOption() {
     double sommeDenominateur = 0.0;
     double sommeNumerateur = 0.0;
     double payoffcoeff = 1.0 / (double)(path->n);
+    double p = 0;
     PnlMat* poids = pnl_mat_create(1, path->n);
     for (int j = 0; j < path->n; j++) {
           pnl_mat_set(poids,0,j,payoffcoeff);
@@ -37,19 +38,22 @@ PerformanceOption::~PerformanceOption() {
     for (int i = 1; i < path->m; i++) {
 
         for (int j = 0; j < path->n; j++) {
-            sommeNumerateur = pnl_mat_get(poids,0,j) * pnl_mat_get(path,i,j);
+            sommeNumerateur += pnl_mat_get(poids,0,j) * pnl_mat_get(path,i,j);
         
-            sommeDenominateur = pnl_mat_get(poids,0,j) * pnl_mat_get(path,i-1,j);
+            sommeDenominateur += pnl_mat_get(poids,0,j) * pnl_mat_get(path,i-1,j);
         }
 
-        sommeGenerale +=  (sommeNumerateur / sommeDenominateur) - 1.0;
+        p = (sommeNumerateur / sommeDenominateur) - 1.0;
+        
+        if (p < 0) {
+            sommeGenerale += 0;
+        }
+        else {
+            sommeGenerale +=  p;
+        }
 
         sommeNumerateur = 0.0;
         sommeDenominateur = 0.0;
-    }
-
-    if (sommeGenerale < 0) {
-        sommeGenerale = 0;
     }
 
     sommeGenerale += 1;
