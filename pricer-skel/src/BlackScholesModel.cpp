@@ -167,7 +167,7 @@ void BlackScholesModel::shiftAsset(PnlMat *shift_path, const PnlMat *path,
         //std::cout << "i : " << i << " path->m : " << path->m << std::endl;
         valeurShift = pnl_mat_get(path,compteur,d) * (1 + h);
         //std::cout << "hhhhhhhhhh : " << h << std::endl;
-        pnl_mat_set(shift_path,compteur,d,valeurShift);
+        pnl_mat_set(shift_path,i,d,valeurShift);
     }
     //std::cout << "h : " << h << std::endl;
 }

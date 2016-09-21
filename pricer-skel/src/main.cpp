@@ -89,7 +89,7 @@ int main(int argc, char **argv)
 
     pnl_vect_print(delta);
 
-    std::cout << " somme delta : " << somme << std::endl;
+    
     pnl_vect_free(&spot);
     pnl_vect_free(&sigma);
     pnl_vect_free(&divid);
