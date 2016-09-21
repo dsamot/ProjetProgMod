@@ -15,7 +15,7 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    double steps = 0;
+    double steps = 0.3;
     double maturity, interest, strike, corr;
     PnlVect *spot, *sigma, *divid;
     string type;
@@ -46,6 +46,7 @@ int main(int argc, char **argv)
     for(int i = 0; i < size; i++) {
         pnl_mat_set(past,0,i,100);
     }
+
     PnlMat *path = pnl_mat_create(timeStepsNb + 1,size);
     PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
     pnl_rng_sseed(rng, time(NULL));
@@ -71,17 +72,24 @@ int main(int argc, char **argv)
 
     double prix;
     double ic;
+    PnlVect *delta = pnl_vect_create(size);
     montecarlo->price(prix,ic);
 
     std::cout << "prix : " << prix << std::endl;
     std::cout << "ic : " << ic << std::endl;
     
     //Cas data historiques
-    montecarlo->price(past,0,prix,ic);
-
+    /*montecarlo->price(past,2*maturity/timeStepsNb,prix,ic);
+    
     std::cout << "prix histo : " << prix << std::endl;
-    std::cout << "ic histo : " << ic << std::endl;
+    std::cout << "ic histo : " << ic << std::endl;*/
 
+    montecarlo->delta(past,0,delta);
+
+
+    pnl_vect_print(delta);
+
+    std::cout << " somme delta : " << somme << std::endl;
     pnl_vect_free(&spot);
     pnl_vect_free(&sigma);
     pnl_vect_free(&divid);

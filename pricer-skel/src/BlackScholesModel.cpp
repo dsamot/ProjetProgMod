@@ -149,18 +149,24 @@ void BlackScholesModel::shiftAsset(PnlMat *shift_path, const PnlMat *path,
 
     //Initialisation de la matrice shift_path avec les valeurs de path
     pnl_mat_set_subblock(shift_path,path,0,0);
+    //pnl_mat_print(path);
 
     //Recuperation de la ligne de la matrice path qui correspond a la date t
     while (pas <= t) {
         compteur++;
+        //std::cout << "compteur : " << compteur << std::endl;
         pas += timestep;
     }
 
+    //std::cout << "compteur : " << compteur << "path->m : " << path->m << std::endl;
     double valeurShift = 0;
     
     //On shift sur le sous-jacent d
-    for (int i = compteur; compteur < path->m; i++) {
+    for (int i = compteur; i < path->m ; i++) {
+        //std::cout << "i : " << i << " path->m : " << path->m << std::endl;
         valeurShift = pnl_mat_get(path,compteur,d) * (1 + h);
+        //std::cout << "hhhhhhhhhh : " << h << std::endl;
         pnl_mat_set(shift_path,compteur,d,valeurShift);
     }
+    //std::cout << "h : " << h << std::endl;
 }
