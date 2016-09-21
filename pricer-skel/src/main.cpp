@@ -41,6 +41,8 @@ int main(int argc, char **argv)
     P->extract("sample number", sample);
     P->extract("timestep number", timeStepsNb);
 
+    //Cas ou on connait deja des donnees historiques
+    PnlMat *past = pnl_mat_create(1,size);
     PnlMat *path = pnl_mat_create(timeStepsNb + 1,size);
     PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
     pnl_rng_sseed(rng, time(NULL));
@@ -60,9 +62,16 @@ int main(int argc, char **argv)
 
     BlackScholesModel *model = new BlackScholesModel(size,interest,corr,sigma,spot);
     MonteCarlo *montecarlo = new MonteCarlo(model,option,rng,steps,sample);
+    //Cas data historiques
+    std::cout << "nbTimeSteps : " << (timeStepsNb *(maturity-maturity) / maturity) << std::endl;
+    model->asset(past, 1, 0, rng);
+
     double prix;
     double ic;
     montecarlo->price(prix,ic);
+    //Cas data historiques
+    montecarlo->price(past,maturity-maturity,prix,ic);
+
     std::cout << "prix : " << prix << std::endl;
     std::cout << "ic : " << ic << std::endl;
 
