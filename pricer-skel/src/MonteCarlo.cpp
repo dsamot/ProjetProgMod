@@ -74,7 +74,7 @@ void MonteCarlo::price(const PnlMat* past, double t, double& prix, double& ic) {
 }
 
 
-void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta) {
+/*void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta) {
     double M = (double)nbSamples_;
     double interet = mod_->r_ ;
     double maturite = opt_->T_;
@@ -97,6 +97,6 @@ void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta) {
         sommeDiffPayOff = 0;
     }
     pnl_vect_print(delta);
-}
+}*/
 
 

@@ -87,7 +87,7 @@ void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
     for (int d = 0; d < size_; d++) {
         st = pnl_mat_get(past,(past->m - 1),d);
         for (int n = past->m; n < nbTimeSteps; n++) {
-            u = (T/(double) nbTimeSteps) * (past->m) - t;
+            u = (T/(double) nbTimeSteps) *n - t;
             //std::cout << "u: " << u << std::endl;
             sTilde = exp(r_ - (pnl_vect_get(sigma_,d)/2)*u + pnl_vect_get(sigma_,d)*pnl_rng_normal(rng));
             sSimul = st * sTilde;
