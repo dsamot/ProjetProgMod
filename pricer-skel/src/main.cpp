@@ -70,6 +70,7 @@ int main(int argc, char **argv)
     //std::cout << "nbTimeSteps : " << (timeStepsNb *(maturity-maturity) / maturity) << std::endl;
     //model->asset(past, 1, 0, rng);
 
+    //model->asset(past, maturity, 365, rng);
     double prix;
     double ic;
     PnlVect *delta = pnl_vect_create(size);
@@ -90,7 +91,12 @@ int main(int argc, char **argv)
     pnl_vect_free(&spot);
     pnl_vect_free(&sigma);
     pnl_vect_free(&divid);
+    pnl_mat_free(&past);
+    pnl_rng_free(&rng);
     delete P;
+    delete model;
+    delete option;
+    delete montecarlo;
 
     exit(0);
 }

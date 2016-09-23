@@ -23,6 +23,14 @@ public:
      */
     MonteCarlo(BlackScholesModel *bsModel, Option* option,PnlRng* pnlRng,double steps,int nbSamples);
     
+
+
+    /*
+    * Destructeur
+    */
+    virtual ~MonteCarlo();
+    
+
     /**
      * Calcule le prix de l'option à la date 0
      *

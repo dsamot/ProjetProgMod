@@ -27,6 +27,11 @@ public:
      */
     BlackScholesModel(int size, double r, double rho, PnlVect *sigma, PnlVect *spot);
     
+
+    /*
+    * Destructeur
+    */
+    virtual ~BlackScholesModel();
     
     /**
      * Génère une trajectoire du modèle et la stocke dans path

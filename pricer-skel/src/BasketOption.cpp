@@ -40,11 +40,13 @@ double BasketOption::payoff(const PnlMat* path) {
     for (int i = 0; i < path->n; i++) {
         somme = somme + pnl_mat_get(poids,0,i) * pnl_mat_get(path,N,i);
     }
+    pnl_mat_free(&poids);
     somme -= strike;
     if (somme > 0) {
         return somme;
     } else {
         return 0.0;
     }
+
 } 
 

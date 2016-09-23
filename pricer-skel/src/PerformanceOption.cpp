@@ -57,6 +57,7 @@ PerformanceOption::~PerformanceOption() {
     }
 
     sommeGenerale += 1;
+    pnl_mat_free(&poids);
 
     return sommeGenerale;
 }

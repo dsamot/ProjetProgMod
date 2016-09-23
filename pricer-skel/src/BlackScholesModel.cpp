@@ -1,6 +1,9 @@
 #include "BlackScholesModel.hpp"
 #include <iostream>
 
+BlackScholesModel::~BlackScholesModel() {
+}
+
 
 BlackScholesModel::BlackScholesModel() {
     this->sigma_ = pnl_vect_create(0);
@@ -65,12 +68,29 @@ void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *r
             pnl_mat_set(path,n+1,d,(pnl_mat_get(path,n,d) * exp(exprExp)));
         }
     }
+    pnl_mat_free(&G);
+    pnl_vect_free(&Ld);
+    pnl_vect_free(&Gn);
 }
 
 
 
 void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
                PnlRng *rng, const PnlMat *past) {  
+    double pasTemps = T/(double) nbTimeSteps;
+    int debutSimulation;
+    double diff = t;
+    // On regarde si t est une date de rebalancement
+
+    while (diff > 0 ) {
+        diff -= pasTemps;
+    }
+    if(diff == 0) {
+        debutSimulation =past->m - 1;
+    } else {
+        debutSimulation = past->m - 2;
+    }
+
     // Remplissage d'une partie de la matrice des chemins
     // avec la matrice past contenant des donnees historiques
     pnl_mat_set_subblock(path,past,0,0);
@@ -98,7 +118,7 @@ void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
     for (int d = 0; d < size_; d++) {
         st = pnl_mat_get(past,(past->m - 1),d);
         pnl_mat_get_row(Ld,CorrelationMat,d);
-        for (int n = (past->m - 1); n < nbTimeSteps; n++) {
+        for (int n = debutSimulation; n < nbTimeSteps; n++) {
             pnl_mat_get_col(Gn,G,n);
             LG = pnl_vect_scalar_prod(Ld,Gn);
 
@@ -108,11 +128,13 @@ void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
                 u = (T/(double) nbTimeSteps);
             }
             sTilde = exp((r_ - (pow(pnl_vect_get(sigma_,d),2)/2.0)) * u + pnl_vect_get(sigma_,d) * sqrt(u) * LG);
+
             if (prem) {
                 sSimul = st * sTilde;
             } else {
                 sSimul = pnl_mat_get(path,n,d) * sTilde;
             }
+            
             pnl_mat_set(path,n+1,d,sSimul);
             prem = false;
             //std::cout << "n+1: " << n+1 << std::endl;
@@ -132,7 +154,6 @@ void BlackScholesModel::shiftAsset(PnlMat *shift_path, const PnlMat *path,
 
     //Initialisation de la matrice shift_path avec les valeurs de path
     pnl_mat_set_subblock(shift_path,path,0,0);
-
     //Recuperation de la ligne de la matrice path qui correspond a la date t
     while (pas <= t) {
         compteur++;
@@ -143,7 +164,7 @@ void BlackScholesModel::shiftAsset(PnlMat *shift_path, const PnlMat *path,
     
     //On shift sur le sous-jacent d
     for (int i = compteur; i < path->m ; i++) {
-        valeurShift = pnl_mat_get(path,compteur,d) * (1 + h);
+        valeurShift = pnl_mat_get(path,i,d) * (1 + h);
         pnl_mat_set(shift_path,i,d,valeurShift);
     }
 }
