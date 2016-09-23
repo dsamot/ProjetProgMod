@@ -3,6 +3,7 @@
 #include "pnl/pnl_random.h"
 #include "pnl/pnl_vector.h"
 #include "pnl/pnl_matrix.h"
+#include "Market.hpp"
 
 /// \brief Modèle de Black Scholes
 class BlackScholesModel
@@ -73,6 +74,10 @@ public:
      */
     void shiftAsset(PnlMat *shift_path, const PnlMat *path,
                     int d, double h, double t, double timestep);
+
+   PnlMat* simul_market(Market myMarket, PnlRng *rng);
+
+  // double profitLoss(PnlVect * delta, Market myMarket, PnlMat * simulatedMarket, double p0);
 
 };
 
