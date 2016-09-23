@@ -1,4 +1,5 @@
 #include "BlackScholesModel.hpp"
+#include "Market.hpp"
 #include <iostream>
 
 
@@ -147,3 +148,68 @@ void BlackScholesModel::shiftAsset(PnlMat *shift_path, const PnlMat *path,
         pnl_mat_set(shift_path,i,d,valeurShift);
     }
 }
+
+
+PnlMat* BlackScholesModel::simul_market(Market myMarket, PnlRng *rng){
+
+
+ PnlMat *path = pnl_mat_create(myMarket.nbTimeSteps_,myMarket.size_);
+
+// Creation d'une matrice D x (N+1) qui représente la suite de vecteurs gaussiens
+    PnlMat *G = pnl_mat_create(myMarket.nbTimeSteps_, myMarket.size_);
+    double spot;
+    double sigma;
+    double mu;
+    PnlVect *choleskyVect = pnl_vect_create(myMarket.size_);
+    PnlVect *gaussienVect = pnl_vect_create(myMarket.size_);
+    double scalarProd;
+
+    std::cout << "Debut boucle 1" << std::endl;
+    for (int d = 0; d < myMarket.nbTimeSteps_; d++) {      
+        for (int n = 0; n < myMarket.size_; n++) {
+            pnl_mat_set(G,d,n,pnl_rng_normal(rng));
+        }
+    }
+
+
+
+
+std::cout << "Debut boucle 2" << std::endl;
+    for (int j = 0; j<myMarket.size_; j++){
+        spot = pnl_vect_get(myMarket.spot_, j);
+        sigma = pnl_vect_get(myMarket.sigma_, j);
+        mu = pnl_vect_get(myMarket.mu_, j);
+
+        pnl_mat_get_col(choleskyVect, myMarket.CorrelationMat, j);
+        std::cout << "Debut boucle 3" << std::endl;
+        for (int i = 0; i<myMarket.nbTimeSteps_; i++){
+
+            pnl_mat_get_row(gaussienVect, G, i);
+        
+             scalarProd = pnl_vect_scalar_prod(gaussienVect, choleskyVect);
+             double time = i * myMarket.maturity_ / myMarket.nbTimeSteps_;
+             double exprExp = (mu-sigma*sigma/2) * time + sigma* scalarProd;
+
+             double simulatedAsset = spot * exp(exprExp);
+
+             pnl_mat_set(path, i, j, simulatedAsset);
+
+        }
+    }
+
+return path;
+}
+
+  /*double BlackScholesModel::profitLoss( Market myMarket, PnlMat * simulatedMarket, double p0){
+    PnlVect *delta = pnl_vect_create(size);
+    montecarlo->delta(past,0,delta);
+
+
+
+
+
+
+//double portfolio = p0 - pnl_vect_get()
+
+
+  }*/

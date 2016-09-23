@@ -4,20 +4,21 @@
 #include "pnl/pnl_random.h"
 #include "pnl/pnl_vector.h"
 
+
 #include "BlackScholesModel.hpp"
 #include "MonteCarlo.hpp"
 #include "BasketOption.h"
 #include "AsianOption.hpp"
 #include "PerformanceOption.hpp"
 #include "parser.hpp"
-
+#include "Market.hpp"
 using namespace std;
 
 int main(int argc, char **argv)
 {
     double steps = 0.3;
     double maturity, interest, strike, corr;
-    PnlVect *spot, *sigma, *divid;
+    PnlVect *spot, *mu, *sigma, *divid;
     string type;
     int size, timeStepsNb;
     size_t sample;
@@ -29,6 +30,7 @@ int main(int argc, char **argv)
     P->extract("maturity", maturity);
     P->extract("option size", size);
     P->extract("spot", spot, size);
+    P->extract("mu", mu, size);
     P->extract("volatility", sigma, size);
     P->extract("correlation", corr);
 
@@ -70,9 +72,18 @@ int main(int argc, char **argv)
     //std::cout << "nbTimeSteps : " << (timeStepsNb *(maturity-maturity) / maturity) << std::endl;
     //model->asset(past, 1, 0, rng);
 
+
+    PnlMat* result;
+    std::cout << "Debut" << std::endl;
+    Market *myMarket = new Market(sigma, spot, mu,  corr, maturity, timeStepsNb, size, interest);
+    std::cout << "Milieu" << std::endl;
+    result = model->simul_market(*myMarket, rng);
+std::cout << "Fin" << std::endl;
+    pnl_mat_print(result);
+
     double prix;
     double ic;
-    PnlVect *delta = pnl_vect_create(size);
+    //PnlVect *delta = pnl_vect_create(size);
     /*montecarlo->price(prix,ic);
 
     std::cout << "prix : " << prix << std::endl;
@@ -84,7 +95,7 @@ int main(int argc, char **argv)
     std::cout << "prix histo : " << prix << std::endl;
     std::cout << "ic histo : " << ic << std::endl;*/
 
-    montecarlo->delta(past,0,delta);
+   // montecarlo->delta(past,0,delta);
 
     
     pnl_vect_free(&spot);
