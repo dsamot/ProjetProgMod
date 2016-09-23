@@ -8,6 +8,8 @@ BlackScholesModel::BlackScholesModel() {
     size_ = 0;
     r_ = 0;
     rho_ = 0;
+    CorrelationMat = pnl_mat_create(0,0);
+    cholesky = 0;
 }
 
 BlackScholesModel::BlackScholesModel(int size, double r, double rho, PnlVect *sigma, PnlVect *spot) {
@@ -16,14 +18,7 @@ BlackScholesModel::BlackScholesModel(int size, double r, double rho, PnlVect *si
     size_ = size;
     r_ = r;
     rho_ = rho;
-}
-
-void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *rng) {
-    double pasTemps = T/(double) nbTimeSteps;
-    //std::cout<< "pasTemps: " << pasTemps <<std::endl;
-
-    // Creation de la matrice de correlation
-    PnlMat *CorrelationMat = pnl_mat_create(size_,size_);
+    CorrelationMat = pnl_mat_create(size_,size_);
     for (int i = 0; i < size_; i++) {
         for (int j = 0; j < size_; j++) {
             if (i == j) {
@@ -34,18 +29,18 @@ void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *r
             }
         }
     }
-
     // Factorisation de cholesky de la matrice de correlation
-    int cholesky;
     cholesky = pnl_mat_chol(CorrelationMat);
-    
-    
+}
+
+
+void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *rng) {
+    double pasTemps = T/(double) nbTimeSteps;    
     // Remplissage de la premiere ligne de la matrice des chemins
     // avec les prix spot
     for (int d = 0; d < size_; d++) {
         pnl_mat_set(path,0,d,pnl_vect_get(spot_,d));
     }
-
 
     // Creation d'une matrice D x (N+1) qui représente la suite de vecteurs gaussiens
     PnlMat *G = pnl_mat_create(size_,nbTimeSteps);
@@ -83,23 +78,6 @@ void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
     double sTilde;
     double sSimul;
     double st;
-
-    // Creation de la matrice de correlation
-    PnlMat *CorrelationMat = pnl_mat_create(size_,size_);
-    for (int i = 0; i < size_; i++) {
-        for (int j = 0; j < size_; j++) {
-            if (i == j) {
-                pnl_mat_set(CorrelationMat,i,j,1);
-            } else {
-                pnl_mat_set(CorrelationMat,i,j,rho_);
-
-            }
-        }
-    }
-
-    // Factorisation de cholesky de la matrice de correlation
-    int cholesky;
-    cholesky = pnl_mat_chol(CorrelationMat);
 
     // Creation d'une matrice D x (N+1) qui représente la suite de vecteurs gaussiens
     PnlMat *G = pnl_mat_create(size_,nbTimeSteps);
@@ -142,7 +120,6 @@ void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
        prem = true;
     }
 
-    pnl_mat_free(&CorrelationMat);
     pnl_mat_free(&G);
     pnl_vect_free(&Ld);
     pnl_vect_free(&Gn);
@@ -155,24 +132,18 @@ void BlackScholesModel::shiftAsset(PnlMat *shift_path, const PnlMat *path,
 
     //Initialisation de la matrice shift_path avec les valeurs de path
     pnl_mat_set_subblock(shift_path,path,0,0);
-    //pnl_mat_print(path);
 
     //Recuperation de la ligne de la matrice path qui correspond a la date t
     while (pas <= t) {
         compteur++;
-        //std::cout << "compteur : " << compteur << std::endl;
         pas += timestep;
     }
 
-    //std::cout << "compteur : " << compteur << "path->m : " << path->m << std::endl;
     double valeurShift = 0;
     
     //On shift sur le sous-jacent d
     for (int i = compteur; i < path->m ; i++) {
-        //std::cout << "i : " << i << " path->m : " << path->m << std::endl;
         valeurShift = pnl_mat_get(path,compteur,d) * (1 + h);
-        //std::cout << "hhhhhhhhhh : " << h << std::endl;
         pnl_mat_set(shift_path,i,d,valeurShift);
     }
-    //std::cout << "h : " << h << std::endl;
 }

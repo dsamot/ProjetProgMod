@@ -13,6 +13,9 @@ public:
     double rho_; /// paramètre de corrélation
     PnlVect *sigma_; /// vecteur de volatilités
     PnlVect *spot_; /// valeurs initiales du sous-jacent
+    PnlMat *CorrelationMat;
+    int cholesky;
+
 
     /*!
      * \brief Constructeur par défaut

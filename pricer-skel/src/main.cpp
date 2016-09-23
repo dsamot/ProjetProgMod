@@ -86,9 +86,6 @@ int main(int argc, char **argv)
 
     montecarlo->delta(past,0,delta);
 
-
-    pnl_vect_print(delta);
-
     
     pnl_vect_free(&spot);
     pnl_vect_free(&sigma);
