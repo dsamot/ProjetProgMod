@@ -19,7 +19,7 @@ int main()
     int timeStepsNb = maturity*12;
     double interest = 0.04879;
     double corr = 0;
-    int size = 2;
+    int size = 1;
     int sample = 50000;
     double strike = 100.0;
     double steps = 0.1;
@@ -42,10 +42,9 @@ int main()
     model->asset(past, maturity, 12, rng);
     BasketOption *basket = new BasketOption(maturity,timeStepsNb,size,strike);
     MonteCarlo *montecarlo = new MonteCarlo(model,basket,rng,steps,sample);
-    /*double prix;
+    double prix;
     double ic;
-    // T1 - t
-    montecarlo->price(past,365/(maturity*365) * maturity ,prix,ic);
+    montecarlo->price(past,1,prix,ic);
     std::cout << "prix1 : " << prix << std::endl;
     
 
@@ -63,11 +62,8 @@ int main()
 
     montecarlo->price(prix,ic);
     std::cout << "prix2 : " << prix << std::endl;
-    */
-    PnlVect *delta = pnl_vect_create(size); 
-    montecarlo->delta(past,maturity*0.5,delta);
-    //montecarlo->delta(past,7,delta);
-    
+
+        
     pnl_vect_free(&spot);
     pnl_vect_free(&sigma);
     pnl_mat_free(&past);
