@@ -78,7 +78,7 @@ public:
    PnlMat* simul_market(Market myMarket, PnlRng *rng);
 
   // double profitLoss(PnlVect * delta, Market myMarket, PnlMat * simulatedMarket, double p0);
-
+ double profitLoss( Market myMarket, PnlMat * simulatedMarket, double p0, Montecarlo * montecarlo){
 };
 
 
