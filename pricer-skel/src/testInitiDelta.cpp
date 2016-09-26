@@ -61,7 +61,7 @@ int main(int argc, char **argv)
     } else if(type == "asian") {
         option = new AsianOption(maturity, timeStepsNb, size, strike, payoffCoeff);
     } else if(type == "performance") {
-        option = new PerformanceOption(maturity, timeStepsNb, size);
+        option = new PerformanceOption(maturity, timeStepsNb, size, payoffCoeff);
     } else {
         exit(0);
     }

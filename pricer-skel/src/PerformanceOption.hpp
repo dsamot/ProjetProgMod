@@ -14,7 +14,7 @@ public:
     PerformanceOption();
     PerformanceOption(const PerformanceOption& orig);
     virtual ~PerformanceOption();
-    PerformanceOption(double monT, int monNbTimeStep, int maSize);
+    PerformanceOption(double monT, int monNbTimeStep, int maSize, PnlVect *payoffcoeff);
       /**
      * Calcule la valeur du payoff sur la trajectoire
      *
