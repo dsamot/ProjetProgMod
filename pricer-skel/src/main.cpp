@@ -89,7 +89,7 @@ int main(int argc, char **argv)
     double p0 ;
     montecarlo->price(p0, ic);
 
-    model->profitLoss(*myMarket, *result, p0, montecarlo);
+    //model->profitLoss(*myMarket, *result, p0, montecarlo);
 
 
     //PnlVect *delta = pnl_vect_create(size);

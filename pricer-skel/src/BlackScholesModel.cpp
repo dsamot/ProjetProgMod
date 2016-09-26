@@ -236,7 +236,7 @@ return path;
   }*/
 
 
-
+/*
   double BlackScholesModel::profitLoss( Market myMarket, PnlMat * simulatedMarket, double p0, MonteCarlo * montecarlo){
     PnlVect *delta = pnl_vect_create(myMarket.size_);
     PnlVect *deltaBeforeStep = pnl_vect_create(myMarket.size_);
@@ -271,5 +271,5 @@ return path;
 
     }
 
-
+*/
 
