@@ -97,6 +97,7 @@ void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta) {
         double maturite = opt_->T_;
         double tempdelta = 0;
         double facteurExp;
+        double expo = exp(-interet*(maturite - t));
 
         PnlMat *shift_path_up = pnl_mat_create(opt_->nbTimeSteps_ +1, mod_->size_); 
         PnlMat *shift_path_down = pnl_mat_create(opt_->nbTimeSteps_ +1, mod_->size_); 
@@ -118,7 +119,8 @@ void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta) {
                 sommeDiffPayOff += opt_->payoff(shift_path_up) - opt_->payoff(shift_path_down);
             }
             //std::cout << "sommeDiffPayOff: " << sommeDiffPayOff << std::endl;
-            facteurExp = exp(-interet*(maturite - t))/(M*2*pnl_mat_get(past, (past->m - 1), idAsset)*fdStep_);
+            facteurExp = expo/(M*2*pnl_mat_get(past, (past->m - 1), idAsset)*fdStep_);
+            //facteurExp = exp(-interet*(maturite - t))/(M*2*pnl_mat_get(past, (past->m - 1), idAsset)*fdStep_);
             tempdelta = facteurExp*sommeDiffPayOff;
             std::cout << "d: " << tempdelta << " indice: " << idAsset << std::endl;
             pnl_vect_set(delta,idAsset, tempdelta);
