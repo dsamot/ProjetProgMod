@@ -20,30 +20,52 @@ int main(int argc, char **argv)
     double maturity, interest, strike, corr;
     PnlVect *spot, *mu, *sigma, *divid, *payoffCoeff;
     string type;
-    int size, timeStepsNb;
+    int size, timeStepsNb, hedgingDateNumber;
     size_t sample;
 
     char *infile = argv[1];
     Param *P = new Parser(infile);
 
-    P->extract("option type", type);
-    P->extract("maturity", maturity);
+    // Extraction des parametres avec le parser
     P->extract("option size", size);
     P->extract("spot", spot, size);
-    P->extract("mu", mu, size);
+    P->extract("maturity", maturity);
     P->extract("volatility", sigma, size);
-    P->extract("correlation", corr);
-    P->extract("payoff coefficients", payoffCoeff, size);
-
     P->extract("interest rate", interest);
+    P->extract("correlation", corr);
+    P->extract("trend", mu, size);
+    P->extract("strike", strike);
+    P->extract("option type", type);
+    P->extract("payoff coefficients", payoffCoeff, size);
+    P->extract("timestep number", timeStepsNb);
+    P->extract("hedging dates number", hedgingDateNumber);
+    P->extract("fd step", steps);
+    P->extract("sample number", sample);
     if (P->extract("dividend rate", divid, size) == false)
     {
         divid = pnl_vect_create_from_zero(size);
     }
-    P->extract("strike", strike);
-    P->extract("sample number", sample);
-    P->extract("timestep number", timeStepsNb);
 
+    // Gestion des cas interdits
+    if (maturity < 0 ) {
+        std::cerr << "La date de maturité est négative" << std::endl;
+        return 1;
+    } else if (size <= 0) {
+        std::cerr << "La taille de l'option est négative ou nulle" << std::endl;
+        return 1;
+    } else if (strike < 0) {
+        std::cerr << "Le strike de l'option a une valeur négative" << std::endl;
+        return 1;
+    } else if (sample <= 0) {
+        std::cerr << "Le nombre d'échantillon pour la méthode de montecarlo est négatif ou nul" << std::endl;
+        return 1;
+    } else if (timeStepsNb <= 0) {
+        std::cerr << "Le nombre de dates à laquelle on évalue le prix du sous-jacent est négatif ou nul" << std::endl;
+        return 1;
+    } else if (hedgingDateNumber <= 0) {
+        std::cerr << "Le nombre de dates à laquelle on évalue le prix du portefeuille de couverture est négatif ou nul" << std::endl;
+        return 1;
+    }
     //Cas ou on connait deja des donnees historiques
     PnlMat *past = pnl_mat_create(1,size);
     for(int i = 0; i < size; i++) {

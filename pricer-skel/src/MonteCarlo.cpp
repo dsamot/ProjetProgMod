@@ -97,6 +97,7 @@ void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta) {
         double maturite = opt_->T_;
         double tempdelta = 0;
         double facteurExp;
+        double expo = exp(-interet*(maturite - t));
 
         PnlMat *shift_path_up = pnl_mat_create(opt_->nbTimeSteps_ +1, mod_->size_); 
         PnlMat *shift_path_down = pnl_mat_create(opt_->nbTimeSteps_ +1, mod_->size_); 
@@ -106,7 +107,7 @@ void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta) {
         double sommeDiffPayOff = 0;
         //pnl_mat_print(path);
 
-        for (int idAsset=0; idAsset < mod_->size_; idAsset++) {
+        /*for (int idAsset=0; idAsset < mod_->size_; idAsset++) {
             
             for(int i=0; i < M; i++) {
                 //std::cout << "i: " << i << std::endl;
@@ -118,12 +119,34 @@ void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta) {
                 sommeDiffPayOff += opt_->payoff(shift_path_up) - opt_->payoff(shift_path_down);
             }
             //std::cout << "sommeDiffPayOff: " << sommeDiffPayOff << std::endl;
-            facteurExp = exp(-interet*(maturite - t))/(M*2*pnl_mat_get(past, (past->m - 1), idAsset)*fdStep_);
+            facteurExp = expo/(M*2*pnl_mat_get(past, (past->m - 1), idAsset)*fdStep_);
+            //facteurExp = exp(-interet*(maturite - t))/(M*2*pnl_mat_get(past, (past->m - 1), idAsset)*fdStep_);
             tempdelta = facteurExp*sommeDiffPayOff;
             std::cout << "d: " << tempdelta << " indice: " << idAsset << std::endl;
             pnl_vect_set(delta,idAsset, tempdelta);
             sommeDiffPayOff = 0;
+        }*/
+
+        /*for (int idAsset=0; idAsset < mod_->size_; idAsset++) {
+            facteurExp = expo/(M*2*pnl_mat_get(past, (past->m - 1), idAsset)*fdStep_);
+        }*/
+
+        for(int i=0; i < M; i++) {
+            mod_->asset(path, t, maturite, opt_->nbTimeSteps_, rng_, past);
+            for (int idAsset=0; idAsset < mod_->size_; idAsset++) {
+                mod_->shiftAsset(shift_path_up, path, idAsset, fdStep_, t , (maturite / (double)opt_->nbTimeSteps_));
+                mod_->shiftAsset(shift_path_down, path, idAsset, -fdStep_, t , (maturite / (double)opt_->nbTimeSteps_));
+                sommeDiffPayOff = opt_->payoff(shift_path_up) - opt_->payoff(shift_path_down);
+                pnl_vect_set(delta,idAsset,(pnl_vect_get(delta,idAsset) + sommeDiffPayOff));
+            }
         }
+
+        for (int idAsset=0; idAsset < mod_->size_; idAsset++) {
+            facteurExp = expo/(M*2*pnl_mat_get(past, (past->m - 1), idAsset)*fdStep_);
+            pnl_vect_set(delta,idAsset,(pnl_vect_get(delta,idAsset)*facteurExp));
+        }
+
+        pnl_vect_print(delta);
         pnl_mat_free(&shift_path_up);
         pnl_mat_free(&shift_path_down);
         pnl_mat_free(&path);
