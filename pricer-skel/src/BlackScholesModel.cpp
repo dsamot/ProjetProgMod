@@ -115,10 +115,12 @@ void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
     double exprExp;
 
     bool prem = true;
+    double volatilite;
 
     // Simulation du prix du sous-jacent à partir de la date t
     for (int d = 0; d < size_; d++) {
         st = pnl_mat_get(past,(past->m - 1),d);
+        volatilite = pnl_vect_get(sigma_,d);
         pnl_mat_get_row(Ld,CorrelationMat,d);
         for (int n = debutSimulation; n < nbTimeSteps; n++) {
             pnl_mat_get_col(Gn,G,n);
@@ -129,7 +131,7 @@ void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
             } else {
                 u = (T/(double) nbTimeSteps);
             }
-            sTilde = exp((r_ - (pow(pnl_vect_get(sigma_,d),2)/2.0)) * u + pnl_vect_get(sigma_,d) * sqrt(u) * LG);
+            sTilde = exp((r_ - (pow(volatilite,2)/2.0)) * u + volatilite * sqrt(u) * LG);
 
             if (prem) {
                 sSimul = st * sTilde;
@@ -139,7 +141,6 @@ void BlackScholesModel::asset(PnlMat *path, double t, double T, int nbTimeSteps,
             
             pnl_mat_set(path,n+1,d,sSimul);
             prem = false;
-            //std::cout << "n+1: " << n+1 << std::endl;
        }
        prem = true;
     }
