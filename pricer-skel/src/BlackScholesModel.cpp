@@ -234,3 +234,42 @@ return path;
 
 
   }*/
+
+
+
+  double BlackScholesModel::profitLoss( Market myMarket, PnlMat * simulatedMarket, double p0, MonteCarlo * montecarlo){
+    PnlVect *delta = pnl_vect_create(myMarket.size_);
+    PnlVect *deltaBeforeStep = pnl_vect_create(myMarket.size_);
+    
+    PnlMat *past;
+    pnl_mat_extract_subblock(past, simulatedMarket, 0, 1, 0, myMarket.size_);
+
+    montecarlo->delta(past,0,delta);
+
+    double portfolio = p0;
+    for(int j=0; j<myMarket.size_; j++){
+        double assetDelta = pnl_vect_get(delta, j);
+        double assetPrice = pnl_mat_get(simulatedMarket, 0, j);
+        portfolio -= assetDelta * assetPrice;
+    }
+
+    double expMultiplier = exp(myMarket.r_ * (myMarket.maturity_/ myMarket.nbTimeSteps_));
+
+    for(int i=1; i< myMarket.nbTimeSteps_; i++){
+        pnl_mat_extract_subblock(past, simulatedMarket, 0, i + 1, 0, myMarket.size_);
+        portfolio *= expMultiplier;
+        deltaBeforeStep = pnl_vect_copy(delta);
+        montecarlo->delta(past, i * myMarket.maturity_/ myMarket.nbTimeSteps_,delta);
+            
+        for(int j=0; j<myMarket.size_; j++){
+            double assetDeltaDifference = pnl_vect_get(delta, j) - pnl_vect_get(deltaBeforeStep, j);
+            double assetPrice = pnl_mat_get(simulatedMarket, i, j);
+            portfolio -= assetDeltaDifference * assetPrice;
+        }
+
+        std::cout << "protfolio at step " << i << " : " << portfolio << std::endl;
+
+    }
+
+
+

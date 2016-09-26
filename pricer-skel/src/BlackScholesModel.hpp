@@ -73,9 +73,12 @@ public:
     void shiftAsset(PnlMat *shift_path, const PnlMat *path,
                     int d, double h, double t, double timestep);
 
-    PnlMat* simul_market(Market myMarket, PnlRng *rng);
+
+   PnlMat* simul_market(Market myMarket, PnlRng *rng);
+
+  // double profitLoss(PnlVect * delta, Market myMarket, PnlMat * simulatedMarket, double p0);
+ double profitLoss( Market myMarket, PnlMat * simulatedMarket, double p0, Montecarlo * montecarlo);
 
 };
-
 
 
