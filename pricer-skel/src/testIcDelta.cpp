@@ -71,10 +71,14 @@ int main(int argc, char **argv)
     MonteCarlo *montecarlo = new MonteCarlo(model,option,rng,steps,sample);
 
     PnlVect *delta = pnl_vect_create(size);
+    PnlVect *ic = pnl_vect_create(size);
+    montecarlo->delta(past,0,delta,ic);
+    std::cout<< "Vecteur des Delta:********" << std::endl;
+    pnl_vect_print(delta);
+    std:cout<< "moitié de la largeur de l'intervalle de confiance pour les deltas:*********" << std::endl;
+    pnl_vect_print(ic);
     
-    montecarlo->delta(past,0,delta);
 
-    
     pnl_vect_free(&spot);
     pnl_vect_free(&sigma);
     pnl_vect_free(&divid);

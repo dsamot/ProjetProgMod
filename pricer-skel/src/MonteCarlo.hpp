@@ -61,6 +61,20 @@ public:
      * de confiance sur le calcul du delta
      */
     void delta(const PnlMat *past, double t, PnlVect *delta);
+
+
+    /**
+     * Calcule le delta de l'option à la date t
+     *
+     * @param[in] past contient la trajectoire du sous-jacent
+     * jusqu'à l'instant t
+     * @param[in] t date à laquelle le calcul est fait
+     * @param[out] delta contient le vecteur de delta
+     * de confiance sur le calcul du delta
+     * @param[out] ic vecteur qui contient la moitié de la largeur 
+     *de l'intervalle de confiance sur le calcul des deltas
+     */
+    void delta(const PnlMat *past, double t, PnlVect *delta, PnlVect *ic);
 };
 
 

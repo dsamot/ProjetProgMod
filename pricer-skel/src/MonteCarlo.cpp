@@ -131,3 +131,48 @@ void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta) {
 }
 
 
+
+
+void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta, PnlVect *ic) {
+    if (t < 0) {
+        std::cerr << "La date de pricing est négative!" << std::endl;
+    } else if (t > opt_->T_) {
+        std::cerr << "La date de pricing est supérieure à la maturité de l'option!" << std::endl;
+    } else {
+        double M = (double)nbSamples_;
+        double interet = mod_->r_ ;
+        double maturite = opt_->T_;
+        double tempdelta = 0;
+        double facteur;
+
+        PnlMat *shift_path_up = pnl_mat_create(opt_->nbTimeSteps_ +1, mod_->size_); 
+        PnlMat *shift_path_down = pnl_mat_create(opt_->nbTimeSteps_ +1, mod_->size_); 
+
+        PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ +1, mod_->size_);
+        double sommeDiffPayOff = 0;
+        double sommeDiffPayOffSquared = 0;
+        double diff = 0;
+        for (int idAsset=0; idAsset < mod_->size_; idAsset++) {
+            for(int i=0; i < M; i++) {
+                mod_->asset(path, t, maturite, opt_->nbTimeSteps_, rng_, past);
+                mod_->shiftAsset(shift_path_up, path, idAsset, fdStep_, t , (maturite / (double)opt_->nbTimeSteps_));
+                mod_->shiftAsset(shift_path_down, path, idAsset, -fdStep_, t , (maturite / (double)opt_->nbTimeSteps_));
+                diff = opt_->payoff(shift_path_up) - opt_->payoff(shift_path_down);
+                sommeDiffPayOff += diff;
+                sommeDiffPayOffSquared += diff*diff;
+            }
+            //std::cout << "fdStep: " << fdStep_<< std::endl; 
+            facteur = 1/(2*pnl_mat_get(past, (past->m - 1), idAsset)*fdStep_);
+            tempdelta = exp(-interet*(maturite - t))/M*facteur*sommeDiffPayOff;
+            pnl_vect_set(delta,idAsset, tempdelta);
+
+            double variance = exp(-2*interet*(maturite-t))*facteur*facteur*(sommeDiffPayOffSquared/M - pow(sommeDiffPayOff/M,2));
+            pnl_vect_set(ic,idAsset,sqrt(variance)*1.96/sqrt(M));
+            sommeDiffPayOff = 0;
+            sommeDiffPayOffSquared = 0;
+        }
+        pnl_mat_free(&shift_path_up);
+        pnl_mat_free(&shift_path_down);
+        pnl_mat_free(&path);
+    }
+}
