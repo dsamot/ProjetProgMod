@@ -189,7 +189,7 @@ void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta, PnlVect *ic
 
         PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ +1, mod_->size_);
         double sommeDiffPayOff = 0;
-        PnlVect sommeDiffPayOffSquared = pnl_vect_create(mod_->size_);
+        PnlVect *sommeDiffPayOffSquared = pnl_vect_create(mod_->size_);
 
         for(int i=0; i < M; i++) {
             mod_->asset(path, t, maturite, opt_->nbTimeSteps_, rng_, past);
