@@ -40,6 +40,7 @@ BlackScholesModel::BlackScholesModel(int size, double r, double rho, PnlVect *si
 
 void BlackScholesModel::asset(PnlMat *path, double T, int nbTimeSteps, PnlRng *rng) {
     double pasTemps = T/(double) nbTimeSteps;    
+    
     // Remplissage de la premiere ligne de la matrice des chemins
     // avec les prix spot
     for (int d = 0; d < size_; d++) {
