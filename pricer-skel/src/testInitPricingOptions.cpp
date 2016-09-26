@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 {
     double steps = 0.3;
     double maturity, interest, strike, corr;
-    PnlVect *spot, *mu, *sigma, *divid;
+    PnlVect *spot, *mu, *sigma, *divid, *payoffCoeff;
     string type;
     int size, timeStepsNb;
     size_t sample;
@@ -33,6 +33,7 @@ int main(int argc, char **argv)
     P->extract("mu", mu, size);
     P->extract("volatility", sigma, size);
     P->extract("correlation", corr);
+    P->extract("payoff coefficients", payoffCoeff, size);
 
     P->extract("interest rate", interest);
     if (P->extract("dividend rate", divid, size) == false)
@@ -56,9 +57,9 @@ int main(int argc, char **argv)
     Option *option;
 
     if(type == "basket") {
-        option = new BasketOption(maturity, timeStepsNb, size, strike);
+        option = new BasketOption(maturity, timeStepsNb, size, strike, payoffCoeff);
     } else if(type == "asian") {
-        option = new AsianOption(maturity, timeStepsNb, size, strike);
+        option = new AsianOption(maturity, timeStepsNb, size, strike, payoffCoeff);
     } else if(type == "performance") {
         option = new PerformanceOption(maturity, timeStepsNb, size);
     } else {

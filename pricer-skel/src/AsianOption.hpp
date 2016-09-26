@@ -12,7 +12,7 @@
 class AsianOption  : public Option{
 public:
     AsianOption();
-    AsianOption(double monT, int monNbTimeStep, int maSize, double monStrike);
+    AsianOption(double monT, int monNbTimeStep, int maSize, double monStrike, PnlVect *payoffcoeff);
     AsianOption(const AsianOption& orig);
     virtual ~AsianOption();
             /**

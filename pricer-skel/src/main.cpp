@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 {
     double steps = 0.3;
     double maturity, interest, strike, corr;
-    PnlVect *spot, *mu, *sigma, *divid;
+    PnlVect *spot, *mu, *sigma, *divid, *payoffCoeff;
     string type;
     int size, timeStepsNb;
     size_t sample;
@@ -33,6 +33,7 @@ int main(int argc, char **argv)
     P->extract("mu", mu, size);
     P->extract("volatility", sigma, size);
     P->extract("correlation", corr);
+    P->extract("payoff coefficients", payoffCoeff, size);
 
     P->extract("interest rate", interest);
     if (P->extract("dividend rate", divid, size) == false)
@@ -56,9 +57,9 @@ int main(int argc, char **argv)
     Option *option;
 
     if(type == "basket") {
-        option = new BasketOption(maturity, timeStepsNb, size, strike);
+        option = new BasketOption(maturity, timeStepsNb, size, strike, payoffCoeff);
     } else if(type == "asian") {
-        option = new AsianOption(maturity, timeStepsNb, size, strike);
+        option = new AsianOption(maturity, timeStepsNb, size, strike, payoffCoeff);
     } else if(type == "performance") {
         option = new PerformanceOption(maturity, timeStepsNb, size);
     } else {
@@ -73,14 +74,14 @@ int main(int argc, char **argv)
     //model->asset(past, 1, 0, rng);
 
 
-
+/*
     PnlMat* result;
     std::cout << "Debut" << std::endl;
     Market *myMarket = new Market(sigma, spot, mu,  corr, maturity, timeStepsNb, size, interest);
     std::cout << "Milieu" << std::endl;
     result = model->simul_market(*myMarket, rng);
     std::cout << "Fin" << std::endl;
-    pnl_mat_print(result);
+    pnl_mat_print(result);*/
 
 
     double prix;
@@ -92,10 +93,10 @@ int main(int argc, char **argv)
 
 
     //PnlVect *delta = pnl_vect_create(size);
-    /*montecarlo->price(prix,ic);
+    montecarlo->price(prix,ic);
 
     std::cout << "prix : " << prix << std::endl;
-    std::cout << "ic : " << ic << std::endl;*/
+    std::cout << "ic : " << ic << std::endl;
     
     //Cas data historiques
     /*montecarlo->price(past,2*maturity/timeStepsNb,prix,ic);
