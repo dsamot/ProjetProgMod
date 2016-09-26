@@ -42,23 +42,23 @@ add_executable(parser-test src/parser.cpp src/test_parser.cpp)
 target_link_libraries(parser-test ${LIBS})
 add_executable(main src/BlackScholesModel.cpp src/MonteCarlo.cpp src/BasketOption.cpp src/AsianOption.cpp src/PerformanceOption.cpp src/parser.cpp src/Market.cpp src/main.cpp)
 target_link_libraries(main ${LIBS})
-add_executable(mc_example src/BlackScholesModel.cpp src/MonteCarlo.cpp src/BasketOption.cpp src/AsianOption.cpp src/PerformanceOption.cpp src/parser.cpp src/mc_example.cpp)
+add_executable(mc_example src/Market.cpp src/BlackScholesModel.cpp src/MonteCarlo.cpp src/BasketOption.cpp src/AsianOption.cpp src/PerformanceOption.cpp src/parser.cpp src/mc_example.cpp)
 target_link_libraries(mc_example ${LIBS})
 
 #Testing pricing different options at t=0
-add_executable(testInitPricingOptions src/BlackScholesModel.cpp src/MonteCarlo.cpp src/BasketOption.cpp src/AsianOption.cpp src/PerformanceOption.cpp src/parser.cpp src/testInitPricingOptions.cpp)
+add_executable(testInitPricingOptions src/Market.cpp src/BlackScholesModel.cpp src/MonteCarlo.cpp src/BasketOption.cpp src/AsianOption.cpp src/PerformanceOption.cpp src/parser.cpp src/testInitPricingOptions.cpp)
 target_link_libraries(testInitPricingOptions ${LIBS})
 
 #Testing deltas calculation for different options at t=0
-add_executable(testInitDelta src/BlackScholesModel.cpp src/MonteCarlo.cpp src/BasketOption.cpp src/AsianOption.cpp src/PerformanceOption.cpp src/parser.cpp src/testInitDelta.cpp)
+add_executable(testInitDelta src/Market.cpp src/BlackScholesModel.cpp src/MonteCarlo.cpp src/BasketOption.cpp src/AsianOption.cpp src/PerformanceOption.cpp src/parser.cpp src/testInitiDelta.cpp)
 target_link_libraries(testInitDelta ${LIBS})
 
 #Testing delta calculation at t > 0
-add_executable(testPastBasketDelta src/BlackScholesModel.cpp src/MonteCarlo.cpp src/BasketOption.cpp src/AsianOption.cpp src/PerformanceOption.cpp src/parser.cpp src/testPastBasketDelta.cpp)
+add_executable(testPastBasketDelta src/Market.cpp src/BlackScholesModel.cpp src/MonteCarlo.cpp src/BasketOption.cpp src/AsianOption.cpp src/PerformanceOption.cpp src/parser.cpp src/testPastBasketDelta.cpp)
 target_link_libraries(testPastBasketDelta ${LIBS})
 
 #Testing pricing at t > 0 using a vanilla
-add_executable(testPastPricingVanilla src/BlackScholesModel.cpp src/MonteCarlo.cpp src/BasketOption.cpp src/AsianOption.cpp src/PerformanceOption.cpp src/parser.cpp src/testPastPricingVanilla.cpp)
+add_executable(testPastPricingVanilla src/Market.cpp src/BlackScholesModel.cpp src/MonteCarlo.cpp src/BasketOption.cpp src/AsianOption.cpp src/PerformanceOption.cpp src/parser.cpp src/testPastPricingVanilla.cpp)
 target_link_libraries(testPastPricingVanilla ${LIBS})
 
 

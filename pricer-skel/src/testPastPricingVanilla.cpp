@@ -29,9 +29,11 @@ int main()
     PnlMat *past = pnl_mat_create(12 +1,size);
     PnlVect *sigma = pnl_vect_create(size);
     PnlVect *spot = pnl_vect_create(size);
+    PnlVect *payoffCoeff = pnl_vect_create(size);
     for (int i=0; i<size; i++) {
         pnl_vect_set(spot,i,spotprice);
         pnl_vect_set(sigma,i,vol);
+        pnl_vect_set(payoffCoeff,i,(1/(double)size));
     }
     PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
     pnl_rng_sseed(rng, time(NULL));
@@ -40,7 +42,7 @@ int main()
     
     // Creation des donnees historiques
     model->asset(past, maturity, 12, rng);
-    BasketOption *basket = new BasketOption(maturity,timeStepsNb,size,strike);
+    BasketOption *basket = new BasketOption(maturity,timeStepsNb,size,strike,payoffCoeff);
     MonteCarlo *montecarlo = new MonteCarlo(model,basket,rng,steps,sample);
     double prix;
     double ic;
@@ -57,7 +59,7 @@ int main()
     }
     
     // Creation des donnees historiques
-    basket = new BasketOption(maturity,timeStepsNb,size,strike);
+    basket = new BasketOption(maturity,timeStepsNb,size,strike,payoffCoeff);
     montecarlo = new MonteCarlo(model,basket,rng,steps,sample);
 
     montecarlo->price(prix,ic);

@@ -171,7 +171,7 @@ void BlackScholesModel::shiftAsset(PnlMat *shift_path, const PnlMat *path,
 }
 
 
-PnlMat* BlackScholesModel::simul_market(Market myMarket, PnlRng *rng){
+PnlMat* BlackScholesModel::simul_market(Market myMarket, PnlRng *rng) {
 
 
  PnlMat *path = pnl_mat_create(myMarket.nbTimeSteps_,myMarket.size_);

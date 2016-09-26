@@ -13,7 +13,7 @@ class BasketOption : public Option {
 public:
     BasketOption();
     BasketOption(const BasketOption& orig);
-    BasketOption(double monT, int monNbTimeStep, int maSize, double monStrike);
+    BasketOption(double monT, int monNbTimeStep, int maSize, double monStrike, PnlVect *payoffcoeff);
     virtual ~BasketOption();
         /**
      * Calcule la valeur du payoff sur la trajectoire

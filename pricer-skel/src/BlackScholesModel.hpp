@@ -14,10 +14,8 @@ public:
     double rho_; /// paramètre de corrélation
     PnlVect *sigma_; /// vecteur de volatilités
     PnlVect *spot_; /// valeurs initiales du sous-jacent
-    PnlMat *CorrelationMat;
+    PnlMat * CorrelationMat;
     int cholesky;
-
-
     /*!
      * \brief Constructeur par défaut
      */
@@ -27,12 +25,12 @@ public:
      * \brief Constructeur 
      */
     BlackScholesModel(int size, double r, double rho, PnlVect *sigma, PnlVect *spot);
-    
 
-    /*
-    * Destructeur
-    */
+    /*!
+     * \brief Destructeur 
+     */
     virtual ~BlackScholesModel();
+    
     
     /**
      * Génère une trajectoire du modèle et la stocke dans path
@@ -49,7 +47,7 @@ public:
      * passé jusqu' à la date t
      *
      * @param[out] path  contient une trajectoire du sous-jacent
-     * donnée jusqu'à l'instant T par la matrice past
+     * donnée jusqu'à l'instant t par la matrice past
      * @param[in] t date jusqu'à laquelle on connait la trajectoire.
      * t n'est pas forcément une date de discrétisation
      * @param[in] nbTimeSteps nombre de pas de constatation
@@ -75,9 +73,7 @@ public:
     void shiftAsset(PnlMat *shift_path, const PnlMat *path,
                     int d, double h, double t, double timestep);
 
-   PnlMat* simul_market(Market myMarket, PnlRng *rng);
-
-  // double profitLoss(PnlVect * delta, Market myMarket, PnlMat * simulatedMarket, double p0);
+    PnlMat* simul_market(Market myMarket, PnlRng *rng);
 
 };
 
