@@ -16,13 +16,12 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    double steps = 0.3;
+    double steps = 0.1;
     double maturity, interest, strike, corr;
     PnlVect *spot, *mu, *sigma, *divid, *payoffCoeff;
     string type;
     int size, timeStepsNb, hedgingDateNumber;
     size_t sample;
-
     char *infile = argv[1];
     Param *P = new Parser(infile);
 
@@ -71,7 +70,6 @@ int main(int argc, char **argv)
     for(int i = 0; i < size; i++) {
         pnl_mat_set(past,0,i,100);
     }
-
     PnlMat *path = pnl_mat_create(timeStepsNb + 1,size);
     PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
     pnl_rng_sseed(rng, time(NULL));
@@ -89,8 +87,7 @@ int main(int argc, char **argv)
     }
 
 
-    hedgingDateNumber = 5;
-    mu = pnl_vect_create_from_scalar(size,0.2);
+    pnl_vect_print(mu);
     BlackScholesModel *model = new BlackScholesModel(size,interest,corr,sigma,spot,mu,hedgingDateNumber);
     MonteCarlo *montecarlo = new MonteCarlo(model,option,rng,steps,sample);
     //Cas data historiques
@@ -115,7 +112,7 @@ int main(int argc, char **argv)
     //montecarlo->price(p0, ic);
     PnlVect *V = pnl_vect_create(hedgingDateNumber + 1);
     montecarlo->profitAndLoss(V,PnL);
-    pnl_vect_print(V);
+    //pnl_vect_print(V);
     std::cout << "PnL : " << PnL << std::endl;
 
     //model->profitLoss(*myMarket, *result, p0, montecarlo);
