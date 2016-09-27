@@ -40,8 +40,8 @@ set(LIBS ${LIBS} m)
 # Testing the parser
 add_executable(parser-test src/parser.cpp src/test_parser.cpp)
 target_link_libraries(parser-test ${LIBS})
-add_executable(main src/BlackScholesModel.cpp src/MonteCarlo.cpp src/BasketOption.cpp src/AsianOption.cpp src/PerformanceOption.cpp src/parser.cpp src/Market.cpp src/main.cpp)
-target_link_libraries(main ${LIBS})
+add_executable(pricer src/BlackScholesModel.cpp src/MonteCarlo.cpp src/BasketOption.cpp src/AsianOption.cpp src/PerformanceOption.cpp src/parser.cpp src/Market.cpp src/pricer.cpp)
+target_link_libraries(pricer ${LIBS})
 
 add_executable(mc_example src/Market.cpp src/BlackScholesModel.cpp src/MonteCarlo.cpp src/BasketOption.cpp src/AsianOption.cpp src/PerformanceOption.cpp src/parser.cpp src/mc_example.cpp)
 
