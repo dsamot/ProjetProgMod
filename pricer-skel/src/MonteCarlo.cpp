@@ -2,7 +2,6 @@
 #include <math.h>
 #include "MonteCarlo.hpp"
 #include "parser.hpp"
-#include "BasketOption.h"
 
 
 
@@ -37,43 +36,48 @@ void MonteCarlo::price(double &prix, double &ic){
     double sommePayOffCarre = 0;
     double M = (double)nbSamples_;
     PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1,mod_->size_);
+    // Application de Montecarlo 
     for (int i=0; i< M; i++){
         mod_->asset(path,maturite,opt_->nbTimeSteps_,rng_);
         double res =  opt_->payoff(path);
-        //std::cout << "res" << res << std::endl;
+        // on somme les payoffs pour faire la moyenne
         sommePayOff += res;
+        // On somme le carré des payoffs pour calculer la variance
         sommePayOffCarre += res*res;
     }
     double moyenne = sommePayOff/M;
     double variance = (sommePayOffCarre/M - pow(moyenne,2.0));
-    //double variance = exp(-interet*maturite)*(sommePayOffCarre/M - pow(moyenne,2.0));
+    //Calcule de l'intervalle de confiance pour le prix
     ic = sqrt(variance/M)*2.0*1.96*termeExp;
-    //std::cout << "Variance " <<  variance*exp(-2*interet*maturite) << std::endl;
-    //std::cout << "Standard Variation " <<  sqrt(variance*exp(-2*interet*maturite)/M) << std::endl;
     prix = termeExp*moyenne;
+    //libération de la 
     pnl_mat_free(&path);
 }
 
 
 
 void MonteCarlo::price(const PnlMat* past, double t, double& prix, double& ic) {
-
+    // On regarde si la date t de pricing est correct
     if (t < 0) {
         std::cerr << "La date de pricing est négative!" << std::endl;
     } else if (t > opt_->T_) {
         std::cerr << "La date de pricing est supérieure à la maturité de l'option!" << std::endl;
     } else {
+        // On récupere les parametres qui nous interessent
         double interet = mod_->r_ ;
         double maturite = opt_->T_;
-        
         double termeExp = exp(-interet*(maturite-t));
         double sommePayOff =0;
         double sommePayOffCarre = 0;
         double M = (double)nbSamples_;
+
+        // on crée le path 
         PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ + 1,mod_->size_);
         for (int i=0; i< M; i++){
+            //On simule le path à partir de t 
             mod_->asset(path,t,maturite,opt_->nbTimeSteps_,rng_, past);
             double res =  opt_->payoff(path);
+            // On calcul la somme des payoff et la somme des carrees des payoffs
             sommePayOff += res;
             sommePayOffCarre += res*res;
         }
@@ -86,7 +90,9 @@ void MonteCarlo::price(const PnlMat* past, double t, double& prix, double& ic) {
 }
 
 
+
 void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta) {
+    // On vérifie que la date est correcte
     if (t < 0) {
         std::cerr << "La date de pricing est négative!" << std::endl;
     } else if (t > opt_->T_) {
@@ -98,29 +104,36 @@ void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta) {
         double tempdelta = 0;
         double facteurExp;
         double expo = exp(-interet*(maturite - t));
-
+        // On crée les vecteurs qui vont contenir Le payoff+ et le payoff-
         PnlMat *shift_path_up = pnl_mat_create(opt_->nbTimeSteps_ +1, mod_->size_); 
         PnlMat *shift_path_down = pnl_mat_create(opt_->nbTimeSteps_ +1, mod_->size_); 
 
         PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ +1, mod_->size_);
         double sommeDiffPayOff = 0;
-
+        // On fait le calcul M fois (MonteCarlo)
         for(int i=0; i < M; i++) {
+            // On simule le path
             mod_->asset(path, t, maturite, opt_->nbTimeSteps_, rng_, past);
+            // Pour chaque asset on fait le calcul correspondant
             for (int idAsset=0; idAsset < mod_->size_; idAsset++) {
+                // On fait le shift avec fdStep
                 mod_->shiftAsset(shift_path_up, path, idAsset, fdStep_, t , (maturite / (double)opt_->nbTimeSteps_));
+                // On fait le shift avec -fdStep
                 mod_->shiftAsset(shift_path_down, path, idAsset, -fdStep_, t , (maturite / (double)opt_->nbTimeSteps_));
+                // On calcule la difference des payOff shiftés 
                 sommeDiffPayOff = opt_->payoff(shift_path_up) - opt_->payoff(shift_path_down);
+                // On met le resultat dans le vecteur delta
                 pnl_vect_set(delta,idAsset,(pnl_vect_get(delta,idAsset) + sommeDiffPayOff));
             }
         }
 
+        // On reparcourt le vecteur delta pour faire la moyenne et multiplier par le facteur correspondant
         for (int idAsset=0; idAsset < mod_->size_; idAsset++) {
             facteurExp = expo/(M*2*pnl_mat_get(past, (past->m - 1), idAsset)*fdStep_);
             pnl_vect_set(delta,idAsset,(pnl_vect_get(delta,idAsset)*facteurExp));
         }
 
-        //pnl_vect_print(delta);
+        // On libère ce qui a été allocé
         pnl_mat_free(&shift_path_up);
         pnl_mat_free(&shift_path_down);
         pnl_mat_free(&path);
@@ -131,6 +144,8 @@ void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta) {
 
 
 void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta, PnlVect *ic) {
+        // On vérifie que la date est correcte
+
     if (t < 0) {
         std::cerr << "La date de pricing est négative!" << std::endl;
     } else if (t > opt_->T_) {
@@ -142,26 +157,31 @@ void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta, PnlVect *ic
         double tempdelta = 0;
         double factor;
         double expo = exp(-interet*(maturite - t));
-
+        // On crée les vecteurs qui vont contenir Le payoff+ et le payoff-
         PnlMat *shift_path_up = pnl_mat_create(opt_->nbTimeSteps_ +1, mod_->size_); 
         PnlMat *shift_path_down = pnl_mat_create(opt_->nbTimeSteps_ +1, mod_->size_); 
 
         PnlMat *path = pnl_mat_create(opt_->nbTimeSteps_ +1, mod_->size_);
         double sommeDiffPayOff = 0;
         PnlVect *sommeDiffPayOffSquared = pnl_vect_create(mod_->size_);
-
+        // On fait le calcul M fois (MonteCarlo)
         for(int i=0; i < M; i++) {
+            // On simule le path
             mod_->asset(path, t, maturite, opt_->nbTimeSteps_, rng_, past);
             for (int idAsset=0; idAsset < mod_->size_; idAsset++) {
+                // Pour chaque asset on fait le calcul correspondant
+                // On fait le shift avec fdStep et -fdStep
                 mod_->shiftAsset(shift_path_up, path, idAsset, fdStep_, t , (maturite / (double)opt_->nbTimeSteps_));
                 mod_->shiftAsset(shift_path_down, path, idAsset, -fdStep_, t , (maturite / (double)opt_->nbTimeSteps_));
                 sommeDiffPayOff = opt_->payoff(shift_path_up) - opt_->payoff(shift_path_down);
-
+                // On met le resultat dans le vecteur delta
                 pnl_vect_set(delta,idAsset,(pnl_vect_get(delta,idAsset) + sommeDiffPayOff));
+                // On met le calcul du resultat au carree dans le vecteur ic (pour les ICs)
                 pnl_vect_set(sommeDiffPayOffSquared,idAsset,(pnl_vect_get(sommeDiffPayOffSquared,idAsset) + sommeDiffPayOff*sommeDiffPayOff));
             }
         }
 
+        // On reparcourt le vecteur delta et le vecteur ic pour compléter les calculs (moyenne et facteurs)
         for (int idAsset=0; idAsset < mod_->size_; idAsset++) {
             factor = 1/(2*pnl_mat_get(past, (past->m - 1), idAsset)*fdStep_);
             double carreUn = pnl_vect_get(sommeDiffPayOffSquared,idAsset);

@@ -1,6 +1,5 @@
 /* 
  * File:   PerformanceOption.hpp
- * Author: samotd
  *
  * Created on September 16, 2016, 11:06 AM
  */
@@ -9,6 +8,7 @@
 #define	PERFORMANCEOPTION_HPP
  #include "Option.hpp"
 
+/// \brief Performance Option: Extends Option
 class PerformanceOption : public Option{
 public:
     PerformanceOption();

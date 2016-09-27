@@ -9,6 +9,7 @@
 #define	ASIANOPTION_HPP
 #include "Option.hpp"
 
+/// \brief Asian Option: Extends Option
 class AsianOption  : public Option{
 public:
     AsianOption();

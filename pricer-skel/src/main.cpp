@@ -9,7 +9,7 @@
 
 #include "BlackScholesModel.hpp"
 #include "MonteCarlo.hpp"
-#include "BasketOption.h"
+#include "BasketOption.hpp"
 #include "AsianOption.hpp"
 #include "PerformanceOption.hpp"
 #include "parser.hpp"
@@ -114,8 +114,6 @@ int main(int argc, char **argv)
         exit(0);
     }
 
-
-    //hedgingDateNumber = 5;
     mu = pnl_vect_create_from_scalar(size,0.2);
     BlackScholesModel *model = new BlackScholesModel(size,interest,corr,sigma,spot,mu,hedgingDateNumber);
     MonteCarlo *montecarlo = new MonteCarlo(model,option,rng,steps,sample);
