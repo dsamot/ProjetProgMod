@@ -12,6 +12,10 @@ correlation         <float>   0.5
 option type         <string>  performance
 payoff coefficients <vector>  0.2
 
+
+
+hedging dates number <int> 8
+
 timestep number     <int>     12
 sample number       <long>    50000
 

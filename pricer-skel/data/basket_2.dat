@@ -13,6 +13,8 @@ correlation <float> 0.7
 option type <string> basket
 payoff coefficients <vector> 0.025
 
+
+hedging dates number <int> 8
 timestep number <int> 1
 sample number <long> 50000
 

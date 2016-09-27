@@ -4,6 +4,7 @@
 #include "pnl/pnl_random.h"
 #include "pnl/pnl_vector.h"
 #include <time.h>
+#include <string.h>
 
 
 #include "BlackScholesModel.hpp"
@@ -19,7 +20,8 @@ int main(int argc, char **argv)
 {
     clock_t tStart = clock();
     
-    double steps = 0.3;
+
+    double steps = 0.1;
     double maturity, interest, strike, corr;
     PnlVect *spot, *mu, *sigma, *divid, *payoffCoeff;
     string type;
@@ -33,6 +35,11 @@ int main(int argc, char **argv)
         argFileNb = 1;
     } else if(argc == 3) {
         // if -c // 
+        char *parametre = argv[1];
+        if(strcmp(parametre,"-c") != 0){
+            std::cerr << "Le paramètre passé n'est pas le bon"<< parametre << std::endl;
+            return 1;
+        }
         argFileNb = 2;
 
     } else {
@@ -42,7 +49,6 @@ int main(int argc, char **argv)
 
     char *infile = argv[argFileNb];
 
-    std::cout << argc << std::endl;
 
     Param *P = new Parser(infile);
 
@@ -92,7 +98,6 @@ int main(int argc, char **argv)
     for(int i = 0; i < size; i++) {
         pnl_mat_set(past,0,i,100);
     }
-
     PnlMat *path = pnl_mat_create(timeStepsNb + 1,size);
     PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
     pnl_rng_sseed(rng, time(NULL));
@@ -120,16 +125,13 @@ int main(int argc, char **argv)
     double p0 ;
     double PnL;
 
-    montecarlo->price(prix,ic);
-
-    PnlVect *delta = pnl_vect_create(size);
-    montecarlo->delta(past,0,delta);
-
-    
 
 
     if(argc == 2) {
         //    std::cout << << std::endl;
+        montecarlo->price(prix,ic);
+        PnlVect *delta = pnl_vect_create(size);
+        montecarlo->delta(past,0,delta);
         std::cout << "---------------- Prix et delta à t=0 -----------------" << std::endl;
         std::cout << "Prix à t=0: " << prix << " - Intervalle de confiance : " << ic << std::endl;
         std::cout << "delta à t=0:"<< std::endl;

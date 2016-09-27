@@ -48,8 +48,8 @@ void MonteCarlo::price(double &prix, double &ic){
     double variance = (sommePayOffCarre/M - pow(moyenne,2.0));
     //double variance = exp(-interet*maturite)*(sommePayOffCarre/M - pow(moyenne,2.0));
     ic = sqrt(variance/M)*2.0*1.96*termeExp;
-    std::cout << "Variance " <<  variance*exp(-2*interet*maturite) << std::endl;
-    std::cout << "Standard Variation " <<  sqrt(variance*exp(-2*interet*maturite)/M) << std::endl;
+    //std::cout << "Variance " <<  variance*exp(-2*interet*maturite) << std::endl;
+    //std::cout << "Standard Variation " <<  sqrt(variance*exp(-2*interet*maturite)/M) << std::endl;
     prix = termeExp*moyenne;
     pnl_mat_free(&path);
 }
@@ -180,9 +180,11 @@ void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta, PnlVect *ic
 
 void MonteCarlo::profitAndLoss(PnlVect *V, double &PnL) {
     // Simulation du marché
+    std::cout << "--------------------------------------------" << std::endl;
+    std::cout << " Valeur portefeuille |     Valeur option    " << std::endl;
+    std::cout << "--------------------------------------------" << std::endl;
     PnlMat *marketPath = pnl_mat_create(mod_->hedgingDateNb_ + 1, opt_->size_);
     mod_->simul_market(marketPath, opt_->T_, rng_);
-    
     double valeur;
     double prix;
     double ic;
@@ -204,6 +206,7 @@ void MonteCarlo::profitAndLoss(PnlVect *V, double &PnL) {
     delta(past,0,delta1);
     valeur = prix - pnl_vect_scalar_prod(delta1,Stauxi);
     pnl_vect_set(V,0,valeur);
+    std::cout << "     " << pnl_vect_get(V,0) << "      |        " << prix << "      " << std::endl;
 
 
     // Calcul de la valeur du portefeuille à chaque instant
@@ -232,6 +235,8 @@ void MonteCarlo::profitAndLoss(PnlVect *V, double &PnL) {
         // Mise a jour des vecteurs deltas pour la suite des calculs
         pnl_vect_plus_vect(delta2, delta1);    
         delta1 = pnl_vect_copy(delta2);
+        std::cout << "     " << pnl_vect_get(V,j) << "      |        " << prix << "      " << std::endl;
+
     }
 
     // Calcul du PnL
