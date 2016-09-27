@@ -120,7 +120,7 @@ void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta) {
             pnl_vect_set(delta,idAsset,(pnl_vect_get(delta,idAsset)*facteurExp));
         }
 
-        pnl_vect_print(delta);
+        //pnl_vect_print(delta);
         pnl_mat_free(&shift_path_up);
         pnl_mat_free(&shift_path_down);
         pnl_mat_free(&path);
@@ -170,8 +170,8 @@ void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta, PnlVect *ic
             pnl_vect_set(delta,idAsset,(pnl_vect_get(delta,idAsset)*expo*factor/M));
         }
 
-        pnl_vect_print(delta);
-        pnl_vect_print(ic);
+        //pnl_vect_print(delta);
+        //pnl_vect_print(ic);
         pnl_mat_free(&shift_path_up);
         pnl_mat_free(&shift_path_down);
         pnl_mat_free(&path);

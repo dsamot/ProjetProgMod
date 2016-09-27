@@ -75,7 +75,7 @@ int main(int argc, char **argv)
     montecarlo->delta(past,0,delta,ic);
     std::cout<< "Vecteur des Delta:********" << std::endl;
     pnl_vect_print(delta);
-    std:cout<< "moitié de la largeur de l'intervalle de confiance pour les deltas:*********" << std::endl;
+    std:cout<< "IC:*********" << std::endl;
     pnl_vect_print(ic);
     
 
