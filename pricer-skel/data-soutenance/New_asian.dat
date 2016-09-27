@@ -17,4 +17,5 @@ sample number <long> 100000
 
 trend <vector> 0.1
 hedging dates number <int> 208
-fd step 0.1
+fd step <float> 0.1
+

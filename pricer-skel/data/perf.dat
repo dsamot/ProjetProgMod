@@ -15,3 +15,7 @@ payoff coefficients <vector>  0.2
 timestep number     <int>     12
 sample number       <long>    50000
 
+trend <vector> 0.1
+hedging dates number <int> 104
+fd step <float> 0.1
+
