@@ -5,10 +5,11 @@
  * Created on September 16, 2016, 9:44 AM
  */
 
-#ifndef BASKETOPTION_H
-#define	BASKETOPTION_H
+#ifndef BASKETOPTION_HPP
+#define	BASKETOPTION_HPP
 #include "Option.hpp"
 
+/// \brief Basket Option: Extends Option
 class BasketOption : public Option {
 public:
     BasketOption();

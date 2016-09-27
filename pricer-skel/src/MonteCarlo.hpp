@@ -4,6 +4,7 @@
 #include "BlackScholesModel.hpp"
 #include "pnl/pnl_random.h"
 
+
 class MonteCarlo
 {
 public:
@@ -76,6 +77,14 @@ public:
      */
     void delta(const PnlMat *past, double t, PnlVect *delta, PnlVect *ic);
 
+
+
+    /**
+    * Calcule le P&L de l'option
+    *
+    * @param[in] V vecteur qui contient la valeur du portefeuille à chaque instant
+    * @param[out] Pnl contient le P&L calculé 
+    */
     void profitAndLoss(PnlVect *V, double &PnL);
 };
 
