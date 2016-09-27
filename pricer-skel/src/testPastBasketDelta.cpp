@@ -37,7 +37,9 @@ int main()
     PnlRng *rng = pnl_rng_create(PNL_RNG_MERSENNE);
     pnl_rng_sseed(rng, time(NULL));
 
-    BlackScholesModel *model = new BlackScholesModel(size,interest,corr,sigma,spot);
+    int hedgingDateNumber = 5;
+    PnlVect *mu = pnl_vect_create_from_scalar(size,0.2);
+    BlackScholesModel *model = new BlackScholesModel(size,interest,corr,sigma,spot,mu,hedgingDateNumber);
     
     // Creation des donnees historiques
     model->asset(past, maturity, 12, rng);

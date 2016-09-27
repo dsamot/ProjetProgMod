@@ -20,29 +20,32 @@ int main(int argc, char **argv)
     double maturity, interest, strike, corr;
     PnlVect *spot, *mu, *sigma, *divid, *payoffCoeff;
     string type;
-    int size, timeStepsNb;
+    int size, timeStepsNb, hedgingDateNumber;
     size_t sample;
 
     char *infile = argv[1];
     Param *P = new Parser(infile);
 
-    P->extract("option type", type);
-    P->extract("maturity", maturity);
     P->extract("option size", size);
     P->extract("spot", spot, size);
-    P->extract("mu", mu, size);
+    P->extract("maturity", maturity);
     P->extract("volatility", sigma, size);
+    P->extract("interest rate", interest);
     P->extract("correlation", corr);
+    P->extract("trend", mu, size);
+    P->extract("strike", strike);
+    P->extract("option type", type);
     P->extract("payoff coefficients", payoffCoeff, size);
+    P->extract("timestep number", timeStepsNb);
+    P->extract("hedging dates number", hedgingDateNumber);
+    P->extract("fd step", steps);
+    P->extract("sample number", sample);
 
     P->extract("interest rate", interest);
     if (P->extract("dividend rate", divid, size) == false)
     {
         divid = pnl_vect_create_from_zero(size);
     }
-    P->extract("strike", strike);
-    P->extract("sample number", sample);
-    P->extract("timestep number", timeStepsNb);
 
     //Cas ou on connait deja des donnees historiques
     PnlMat *past = pnl_mat_create(1,size);
@@ -66,8 +69,9 @@ int main(int argc, char **argv)
         exit(0);
     }
 
-
-    BlackScholesModel *model = new BlackScholesModel(size,interest,corr,sigma,spot);
+    hedgingDateNumber = 5;
+    mu = pnl_vect_create_from_scalar(size,0.2);
+    BlackScholesModel *model = new BlackScholesModel(size,interest,corr,sigma,spot,mu,hedgingDateNumber);
     MonteCarlo *montecarlo = new MonteCarlo(model,option,rng,steps,sample);
 
     PnlVect *delta = pnl_vect_create(size);
