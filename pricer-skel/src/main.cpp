@@ -3,6 +3,7 @@
 #include <ctime>
 #include "pnl/pnl_random.h"
 #include "pnl/pnl_vector.h"
+#include <time.h>
 
 
 #include "BlackScholesModel.hpp"
@@ -16,6 +17,8 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
+    clock_t tStart = clock();
+    
     double steps = 0.3;
     double maturity, interest, strike, corr;
     PnlVect *spot, *mu, *sigma, *divid, *payoffCoeff;
@@ -23,7 +26,24 @@ int main(int argc, char **argv)
     int size, timeStepsNb, hedgingDateNumber;
     size_t sample;
 
-    char *infile = argv[1];
+
+    int argFileNb;
+
+    if(argc == 2) {
+        argFileNb = 1;
+    } else if(argc == 3) {
+        // if -c // 
+        argFileNb = 2;
+
+    } else {
+        std::cerr << "Le nombre de paramètres passés au programme n'est pas le bon" << std::endl;
+        return 1;
+    }
+
+    char *infile = argv[argFileNb];
+
+    std::cout << argc << std::endl;
+
     Param *P = new Parser(infile);
 
     // Extraction des parametres avec le parser
@@ -66,6 +86,7 @@ int main(int argc, char **argv)
         std::cerr << "Le nombre de dates à laquelle on évalue le prix du portefeuille de couverture est négatif ou nul" << std::endl;
         return 1;
     }
+    
     //Cas ou on connait deja des donnees historiques
     PnlMat *past = pnl_mat_create(1,size);
     for(int i = 0; i < size; i++) {
@@ -89,53 +110,43 @@ int main(int argc, char **argv)
     }
 
 
-    hedgingDateNumber = 5;
+    //hedgingDateNumber = 5;
     mu = pnl_vect_create_from_scalar(size,0.2);
     BlackScholesModel *model = new BlackScholesModel(size,interest,corr,sigma,spot,mu,hedgingDateNumber);
     MonteCarlo *montecarlo = new MonteCarlo(model,option,rng,steps,sample);
-    //Cas data historiques
-    //std::cout << "nbTimeSteps : " << (timeStepsNb *(maturity-maturity) / maturity) << std::endl;
-    //model->asset(past, 1, 0, rng);
-
-
-/*
-    PnlMat* result;
-    std::cout << "Debut" << std::endl;
-    Market *myMarket = new Market(sigma, spot, mu,  corr, maturity, timeStepsNb, size, interest);
-    std::cout << "Milieu" << std::endl;
-    result = model->simul_market(*myMarket, rng);
-    std::cout << "Fin" << std::endl;
-    pnl_mat_print(result);*/
-
 
     double prix;
     double ic;
     double p0 ;
     double PnL;
-    //montecarlo->price(p0, ic);
+
+    montecarlo->price(prix,ic);
+
+    PnlVect *delta = pnl_vect_create(size);
+    montecarlo->delta(past,0,delta);
+
+    
+
+
+    if(argc == 2) {
+        //    std::cout << << std::endl;
+        std::cout << "---------------- Prix et delta à t=0 -----------------" << std::endl;
+        std::cout << "Prix à t=0: " << prix << " - Intervalle de confiance : " << ic << std::endl;
+        std::cout << "delta à t=0:"<< std::endl;
+        pnl_vect_print(delta);
+        printf("\nTemps d'execution: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+        return 1;
+    }
+
+
     PnlVect *V = pnl_vect_create(hedgingDateNumber + 1);
     montecarlo->profitAndLoss(V,PnL);
     pnl_vect_print(V);
-    std::cout << "PnL : " << PnL << std::endl;
-
-    //model->profitLoss(*myMarket, *result, p0, montecarlo);
-
-
-    //PnlVect *delta = pnl_vect_create(size);
-    /*montecarlo->price(prix,ic);
-
-    std::cout << "prix : " << prix << std::endl;
-    std::cout << "ic : " << ic << std::endl;*/
+    std::cout << " le P&L du portefeuille de couverture est : " << PnL << std::endl;
     
-    //Cas data historiques
-    /*montecarlo->price(past,2*maturity/timeStepsNb,prix,ic);
-    
-    std::cout << "prix histo : " << prix << std::endl;
-    std::cout << "ic histo : " << ic << std::endl;*/
+    printf("\nTemps d'execution: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 
-   // montecarlo->delta(past,0,delta);
-
-    
+    pnl_vect_free(&V);
     pnl_vect_free(&spot);
     pnl_vect_free(&sigma);
     pnl_vect_free(&divid);
