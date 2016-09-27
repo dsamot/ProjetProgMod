@@ -7,7 +7,7 @@
 
 #include "BlackScholesModel.hpp"
 #include "MonteCarlo.hpp"
-#include "BasketOption.h"
+#include "BasketOption.hpp"
 #include "AsianOption.hpp"
 #include "PerformanceOption.hpp"
 #include "parser.hpp"
