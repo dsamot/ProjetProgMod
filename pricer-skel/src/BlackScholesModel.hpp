@@ -14,8 +14,10 @@ public:
     double rho_; /// paramètre de corrélation
     PnlVect *sigma_; /// vecteur de volatilités
     PnlVect *spot_; /// valeurs initiales du sous-jacent
-    PnlMat * CorrelationMat;
+    PnlMat *CorrelationMat;
     int cholesky;
+    PnlVect *mu_;
+    int hedgingDateNb_;
     /*!
      * \brief Constructeur par défaut
      */
@@ -24,7 +26,7 @@ public:
     /*!
      * \brief Constructeur 
      */
-    BlackScholesModel(int size, double r, double rho, PnlVect *sigma, PnlVect *spot);
+    BlackScholesModel(int size, double r, double rho, PnlVect *sigma, PnlVect *spot, PnlVect *mu, int hedgingDateNb);
 
     /*!
      * \brief Destructeur 
@@ -74,7 +76,7 @@ public:
                     int d, double h, double t, double timestep);
 
 
-   PnlMat* simul_market(Market myMarket, PnlRng *rng);
+    void simul_market(PnlMat *path, double T, PnlRng *rng);
 
   // double profitLoss(PnlVect * delta, Market myMarket, PnlMat * simulatedMarket, double p0);
  //double profitLoss( Market myMarket, PnlMat * simulatedMarket, double p0, Montecarlo * montecarlo);

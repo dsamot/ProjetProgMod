@@ -75,6 +75,8 @@ public:
      *de l'intervalle de confiance sur le calcul des deltas
      */
     void delta(const PnlMat *past, double t, PnlVect *delta, PnlVect *ic);
+
+    void profitAndLoss(PnlVect *V, double &PnL);
 };
 
 

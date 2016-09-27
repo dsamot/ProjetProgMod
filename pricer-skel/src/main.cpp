@@ -89,7 +89,9 @@ int main(int argc, char **argv)
     }
 
 
-    BlackScholesModel *model = new BlackScholesModel(size,interest,corr,sigma,spot);
+    hedgingDateNumber = 5;
+    mu = pnl_vect_create_from_scalar(size,0.2);
+    BlackScholesModel *model = new BlackScholesModel(size,interest,corr,sigma,spot,mu,hedgingDateNumber);
     MonteCarlo *montecarlo = new MonteCarlo(model,option,rng,steps,sample);
     //Cas data historiques
     //std::cout << "nbTimeSteps : " << (timeStepsNb *(maturity-maturity) / maturity) << std::endl;
@@ -109,16 +111,21 @@ int main(int argc, char **argv)
     double prix;
     double ic;
     double p0 ;
-    montecarlo->price(p0, ic);
+    double PnL;
+    //montecarlo->price(p0, ic);
+    PnlVect *V = pnl_vect_create(hedgingDateNumber + 1);
+    montecarlo->profitAndLoss(V,PnL);
+    pnl_vect_print(V);
+    std::cout << "PnL : " << PnL << std::endl;
 
     //model->profitLoss(*myMarket, *result, p0, montecarlo);
 
 
     //PnlVect *delta = pnl_vect_create(size);
-    montecarlo->price(prix,ic);
+    /*montecarlo->price(prix,ic);
 
     std::cout << "prix : " << prix << std::endl;
-    std::cout << "ic : " << ic << std::endl;
+    std::cout << "ic : " << ic << std::endl;*/
     
     //Cas data historiques
     /*montecarlo->price(past,2*maturity/timeStepsNb,prix,ic);

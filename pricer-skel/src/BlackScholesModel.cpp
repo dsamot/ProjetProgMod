@@ -16,12 +16,14 @@ BlackScholesModel::BlackScholesModel() {
     cholesky = 0;
 }
 
-BlackScholesModel::BlackScholesModel(int size, double r, double rho, PnlVect *sigma, PnlVect *spot) {
+BlackScholesModel::BlackScholesModel(int size, double r, double rho, PnlVect *sigma, PnlVect *spot, PnlVect *mu, int hedgingDateNb) {
     this->sigma_ = sigma;
     this->spot_ = spot;
     size_ = size;
     r_ = r;
     rho_ = rho;
+    this->mu_ = mu;
+    hedgingDateNb_ = hedgingDateNb;
     CorrelationMat = pnl_mat_create(size_,size_);
     for (int i = 0; i < size_; i++) {
         for (int j = 0; j < size_; j++) {
@@ -173,18 +175,15 @@ void BlackScholesModel::shiftAsset(PnlMat *shift_path, const PnlMat *path,
 }
 
 
-PnlMat* BlackScholesModel::simul_market(Market myMarket, PnlRng *rng) {
+void BlackScholesModel::simul_market(PnlMat *path, double T, PnlRng *rng) {
 
 
- PnlMat *path = pnl_mat_create(myMarket.nbTimeSteps_,myMarket.size_);
+ //PnlMat *path = pnl_mat_create(myMarket.nbTimeSteps_,myMarket.size_);
 
 // Creation d'une matrice D x (N+1) qui représente la suite de vecteurs gaussiens
-    PnlMat *G = pnl_mat_create(myMarket.nbTimeSteps_, myMarket.size_);
-    double spot;
-    double sigma;
-    double mu;
-    PnlVect *choleskyVect = pnl_vect_create(myMarket.size_);
-    PnlVect *gaussienVect = pnl_vect_create(myMarket.size_);
+/*    PnlMat *G = pnl_mat_create(hedgingDateNb_, size_);
+    PnlVect *choleskyVect = pnl_vect_create(size_);
+    PnlVect *gaussienVect = pnl_vect_create(size_);
     double scalarProd;
 
     std::cout << "Debut boucle 1" << std::endl;
@@ -220,7 +219,40 @@ std::cout << "Debut boucle 2" << std::endl;
         }
     }
 
-return path;
+return path;*/
+    double pasTemps = T/(double) hedgingDateNb_;    
+    
+    // Remplissage de la premiere ligne de la matrice des chemins
+    // avec les prix spot
+    for (int d = 0; d < size_; d++) {
+        pnl_mat_set(path,0,d,pnl_vect_get(spot_,d));
+    }
+
+    // Creation d'une matrice D x (N+1) qui représente la suite de vecteurs gaussiens
+    PnlMat *G = pnl_mat_create(size_,hedgingDateNb_);
+    for (int d = 0; d < size_; d++) {      
+        for (int n = 0; n < hedgingDateNb_; n++) {
+            pnl_mat_set(G,d,n,pnl_rng_normal(rng));
+        }
+    }
+
+    double LG;
+    PnlVect *Ld = pnl_vect_create(size_);
+    PnlVect *Gn = pnl_vect_create(size_);
+    double exprExp;
+    // Simulation du prix du sous-jacent à partir de t=0 
+    for (int d = 0; d < size_; d++) {
+        pnl_mat_get_row(Ld,CorrelationMat,d);       
+        for (int n = 0; n < hedgingDateNb_; n++) {
+            pnl_mat_get_col(Gn,G,n);
+            LG = pnl_vect_scalar_prod(Ld,Gn);
+            exprExp = (pnl_vect_get(mu_,d) - (pow(pnl_vect_get(sigma_,d),2)/2.0)) * pasTemps + pnl_vect_get(sigma_,d) * sqrt(pasTemps) * LG;
+            pnl_mat_set(path,n+1,d,(pnl_mat_get(path,n,d) * exp(exprExp)));
+        }
+    }
+    pnl_mat_free(&G);
+    pnl_vect_free(&Ld);
+    pnl_vect_free(&Gn);
 }
 
   /*double BlackScholesModel::profitLoss( Market myMarket, PnlMat * simulatedMarket, double p0){

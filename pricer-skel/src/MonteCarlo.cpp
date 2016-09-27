@@ -120,7 +120,7 @@ void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta) {
             pnl_vect_set(delta,idAsset,(pnl_vect_get(delta,idAsset)*facteurExp));
         }
 
-        pnl_vect_print(delta);
+        //pnl_vect_print(delta);
         pnl_mat_free(&shift_path_up);
         pnl_mat_free(&shift_path_down);
         pnl_mat_free(&path);
@@ -170,10 +170,63 @@ void MonteCarlo::delta(const PnlMat *past, double t, PnlVect *delta, PnlVect *ic
             pnl_vect_set(delta,idAsset,(pnl_vect_get(delta,idAsset)*expo*factor/M));
         }
 
-        pnl_vect_print(delta);
-        pnl_vect_print(ic);
+        //pnl_vect_print(delta);
+        //pnl_vect_print(ic);
         pnl_mat_free(&shift_path_up);
         pnl_mat_free(&shift_path_down);
         pnl_mat_free(&path);
     }
+}
+
+void MonteCarlo::profitAndLoss(PnlVect *V, double &PnL) {
+    PnlMat *marketPath = pnl_mat_create(mod_->hedgingDateNb_ + 1, opt_->size_);
+    mod_->simul_market(marketPath, opt_->T_, rng_);
+    //pnl_mat_print(marketPath);
+    // Initialisation du portefeuille pour t=0
+    double valeur;
+    double prix;
+    double ic;
+    PnlVect *delta1 = pnl_vect_create(opt_->size_);
+    PnlVect *delta2 = pnl_vect_create(opt_->size_);
+    PnlVect *Stauxi = pnl_vect_create(opt_->size_);
+    //PnlMat *past = pnl_mat_create(1,opt_->size_);
+    PnlMat *past = pnl_mat_new();
+    PnlMat *pastcopy = pnl_mat_new();
+    pnl_mat_extract_subblock(past, marketPath, 0, 1, 0, marketPath->n);
+    pnl_mat_get_row(Stauxi,marketPath,0);
+    price(prix,ic);
+    delta(past,0,delta1);
+    valeur = prix - pnl_vect_scalar_prod(delta1,Stauxi);
+    pnl_vect_set(V,0,valeur);
+    double pas = opt_->T_ / (double) mod_->hedgingDateNb_;
+    double pasConstatation = opt_->T_ / (double) opt_->nbTimeSteps_;
+    PnlVect *sub = pnl_vect_create(opt_->size_);
+    int cpt = 0; 
+
+    // Calcul de la valeur du portefeuille à chaque instant
+    for (int j = 1; j < mod_->hedgingDateNb_ + 1; j++) {
+        if ((pas*j > pasConstatation*cpt) == 1) {
+            pastcopy = pnl_mat_copy(past);
+            pnl_mat_resize(past, (past->m + 1), opt_->size_);
+            pnl_mat_set_subblock(past,pastcopy,0,0);
+            cpt ++;
+        }
+        pnl_mat_get_row(sub,marketPath,j);
+        pnl_mat_set_row(past,sub,(past->m - 1));
+        std::cout << "pas*j------------  " << pas*j << std::endl;
+        price(past,pas*j,prix,ic);
+        std::cout << "prix------------  " << prix << std::endl;
+        delta(past,pas*j,delta2);
+        pnl_vect_minus_vect(delta2, delta1);
+        pnl_mat_get_row(Stauxi,past,(past->m - 1));
+        std::cout << "feeeeeeeeeeeeeeee   " << pnl_vect_scalar_prod(delta2,Stauxi) << std::endl;
+        valeur = pnl_vect_get(V,j-1) * exp((mod_->r_ * pas)) - pnl_vect_scalar_prod(delta2,Stauxi);
+        pnl_vect_set(V,j,valeur);
+        //pnl_vect_print(V);
+        pnl_vect_plus_vect(delta2, delta1);    
+        delta1 = pnl_vect_copy(delta2);
+    }
+
+    std::cout << "eeeeeeeeeeeeeeee   " << pnl_vect_scalar_prod(delta2,Stauxi) << std::endl;
+    PnL = pnl_vect_get(V,mod_->hedgingDateNb_) + pnl_vect_scalar_prod(delta2,Stauxi) - prix;
 }
