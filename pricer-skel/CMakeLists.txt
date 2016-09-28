@@ -43,9 +43,6 @@ target_link_libraries(parser-test ${LIBS})
 add_executable(pricer src/BlackScholesModel.cpp src/MonteCarlo.cpp src/BasketOption.cpp src/AsianOption.cpp src/PerformanceOption.cpp src/parser.cpp src/Market.cpp src/pricer.cpp)
 target_link_libraries(pricer ${LIBS})
 
-add_executable(mc_example src/Market.cpp src/BlackScholesModel.cpp src/MonteCarlo.cpp src/BasketOption.cpp src/AsianOption.cpp src/PerformanceOption.cpp src/parser.cpp src/mc_example.cpp)
-
-target_link_libraries(mc_example ${LIBS})
 
 #Testing pricing different options at t=0
 add_executable(testInitPricingOptions src/Market.cpp src/BlackScholesModel.cpp src/MonteCarlo.cpp src/BasketOption.cpp src/AsianOption.cpp src/PerformanceOption.cpp src/parser.cpp src/testInitPricingOptions.cpp)
