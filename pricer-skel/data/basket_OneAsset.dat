@@ -10,14 +10,15 @@ maturity <float> 3
 volatility <vector> 0.2
 interest rate  <float> 0.04879
 correlation <float> 0.0
-mu <vector> 0.2
+trend <vector> 0.2
 
 option type <string> basket
 payoff coefficients <vector> 0.025
 
 
-hedging dates number <int> 8
+hedging dates number <int> 40
 
 timestep number <int> 20
 sample number <long> 50000
+fd step <float> 0.1
 

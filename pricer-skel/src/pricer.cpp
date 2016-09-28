@@ -21,7 +21,7 @@ int main(int argc, char **argv)
     clock_t tStart = clock();
     
 
-    double steps = 0.1;
+    double steps;
     double maturity, interest, strike, corr;
     PnlVect *spot, *mu, *sigma, *divid, *payoffCoeff;
     string type;

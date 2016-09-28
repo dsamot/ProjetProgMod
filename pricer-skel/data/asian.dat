@@ -10,11 +10,12 @@ maturity            <float>   1.5
 volatility          <vector>  0.2
 interest rate       <float>   0.02
 correlation         <float>   0.0
+trend 		    <vector>  0.1
 
 option type         <string>  asian
 payoff coefficients <vector>  0.5
 
-hedging dates number <int> 300
+hedging dates number <int>    300
 
 timestep number     <int>     150
 sample number       <long>    50000
