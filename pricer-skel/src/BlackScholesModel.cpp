@@ -174,15 +174,6 @@ void BlackScholesModel::shiftAsset(PnlMat *shift_path, const PnlMat *path,
     }
 }
 
-/*
-void simul_market(int nbAssets, PnlMat *market)
-{
-    char *marketFile = "market.dat";
-    PnlMat *market_from_file = pnl_mat_create_from_file(marketFile);
-    pnl_mat_extract_subblock(market, market_from_file, 0, market_from_file->m, 0, nbAssets);
-    pnl_mat_free(&market_from_file);
-}
-*/
 
 void BlackScholesModel::simul_market(PnlMat *path, double T, PnlRng *rng) {
     double pasTemps = T/(double) hedgingDateNb_;    
@@ -218,5 +209,14 @@ void BlackScholesModel::simul_market(PnlMat *path, double T, PnlRng *rng) {
     pnl_mat_free(&G);
     pnl_vect_free(&Ld);
     pnl_vect_free(&Gn);
+}
+
+
+void BlackScholesModel::simul_market(int nbAssets, PnlMat *market)
+{
+    char *marketFile = "../data/market.dat";
+    PnlMat *market_from_file = pnl_mat_create_from_file(marketFile);
+    pnl_mat_extract_subblock(market, market_from_file, 0, market_from_file->m, 0, nbAssets);
+    pnl_mat_free(&market_from_file);
 }
 

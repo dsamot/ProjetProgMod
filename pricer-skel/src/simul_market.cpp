@@ -7,7 +7,7 @@
  */
 void simul_market(int nbAssets, PnlMat *market)
 {
-    char *marketFile = "market.dat";
+    char *marketFile = "../data/market.dat";
     PnlMat *market_from_file = pnl_mat_create_from_file(marketFile);
     pnl_mat_extract_subblock(market, market_from_file, 0, market_from_file->m, 0, nbAssets);
     pnl_mat_free(&market_from_file);

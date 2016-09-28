@@ -205,6 +205,7 @@ void MonteCarlo::profitAndLoss(PnlVect *V, double &PnL) {
     std::cout << "--------------------------------------------" << std::endl;
     PnlMat *marketPath = pnl_mat_create(mod_->hedgingDateNb_ + 1, opt_->size_);
     mod_->simul_market(marketPath, opt_->T_, rng_);
+    //mod_->simul_market(opt_->size_, marketPath);
     double valeur;
     double prix;
     double ic;

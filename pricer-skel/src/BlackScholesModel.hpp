@@ -76,10 +76,13 @@ public:
                     int d, double h, double t, double timestep);
 
 
+
     void simul_market(PnlMat *path, double T, PnlRng *rng);
 
-  // double profitLoss(PnlVect * delta, Market myMarket, PnlMat * simulatedMarket, double p0);
- //double profitLoss( Market myMarket, PnlMat * simulatedMarket, double p0, Montecarlo * montecarlo);
+
+
+    void simul_market(int nbAssets, PnlMat *market);
+    
 
 };
 
